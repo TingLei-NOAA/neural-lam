@@ -8,6 +8,7 @@ import pytorch_lightning as pl
 import torch
 import wandb
 
+wandb.init(mode="disabled")
 # Local
 from .. import config, metrics, utils, vis
 
@@ -25,11 +26,16 @@ class ARModel(pl.LightningModule):
         super().__init__()
         self.save_hyperparameters()
         self.args = args
+        print("thinkdeb in ar_model data_config ",args.data_config)
+ 
         self.config_loader = config.Config.from_file(args.data_config)
+        print("thinkdeb in ar_model config_loader ",self.config_loader)
+        print("thinkdeb in ar_model data of  ",self.config_loader.dataset.bc_mask_file)
 
         # Load static features for grid/data
         static_data_dict = utils.load_static_data(
-            self.config_loader.dataset.name
+            self.config_loader.dataset.name,config_loader=self.config_loader
+#cltorg            self.config_loader.dataset.name
         )
         for static_data_name, static_data_tensor in static_data_dict.items():
             self.register_buffer(

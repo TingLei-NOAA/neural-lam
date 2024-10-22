@@ -9,6 +9,7 @@ import torch
 
 # Local
 from . import utils
+from .tlei_function import closest_hour
 
 
 class WeatherDataset(torch.utils.data.Dataset):
@@ -17,16 +18,20 @@ class WeatherDataset(torch.utils.data.Dataset):
     N_t' = 65
     N_t = 65//subsample_step (= 21 for 3h steps)
     dim_y = 268
+#15km rrfs dim_y=268
     dim_x = 238
+#15km rrfs    dim_x = 238
     N_grid = 268x238 = 63784
     d_features = 17 (d_features' = 18)
+#15km rrfs d_features=41
     d_forcing = 5
+#15km rrfs   d_forcing = 5
     """
 
     def __init__(
         self,
         dataset_name,
-        pred_length=19,
+        pred_length=4,
         split="train",
         subsample_step=3,
         standardize=True,
@@ -41,21 +46,30 @@ class WeatherDataset(torch.utils.data.Dataset):
         )
 
         member_file_regexp = (
-            "nwp*mbr000.npy" if control_only else "nwp*mbr*.npy"
+            "nwp*mbr000*.npy" if control_only else "nwp*mbr*.npy"
         )
         sample_paths = glob.glob(
             os.path.join(self.sample_dir_path, member_file_regexp)
         )
         self.sample_names = [path.split("/")[-1][4:-4] for path in sample_paths]
+# for ecample : nwp_2024050718_mbr002_15km.npy
+#        self.sample_names = [path.split("/")[-1][4:-9] for path in sample_paths]
+        print("thinkdeb sample_dir_path ",self.sample_dir_path)
+        print("thinkdeb sample_name ",*self.sample_names)
+
         # Now on form "yyymmddhh_mbrXXX"
 
         if subset:
             self.sample_names = self.sample_names[:50]  # Limit to 50 samples
-
+#        nsample=10
+#        self.sample_names = self.sample_names[:nsample]  #cltthinkdeb250 Limit to 50 samples
         self.sample_length = pred_length + 2  # 2 init states
         self.subsample_step = subsample_step
         self.original_sample_length = (
-            65 // self.subsample_step
+            19 // self.subsample_step
+#clt            65 // self.subsample_step
+#clt 65 should be replaced by 60 in emc-na case, at least, or 
+#it should be variables for different sets like forecast from 01UTC and so on. 
         )  # 21 for 3h steps
         assert (
             self.sample_length <= self.original_sample_length
@@ -83,7 +97,10 @@ class WeatherDataset(torch.utils.data.Dataset):
         sample_name = self.sample_names[idx]
         sample_path = os.path.join(
             self.sample_dir_path, f"nwp_{sample_name}.npy"
+#cltorg            self.sample_dir_path, f"nwp_{sample_name}.npy"
         )
+        print("xxx in getimem weather data")
+        print("file is " , sample_path)
         try:
             full_sample = torch.tensor(
                 np.load(sample_path), dtype=torch.float32
@@ -104,44 +121,45 @@ class WeatherDataset(torch.utils.data.Dataset):
         # (N_t, dim_y, dim_x, d_features')
 
         # Remove feature 15, "z_height_above_ground"
-        sample = torch.cat(
-            (sample[:, :, :, :15], sample[:, :, :, 16:]), dim=3
-        )  # (N_t, dim_y, dim_x, d_features)
+#cltorg        sample = torch.cat(
+#cltorg            (sample[:, :, :, :15], sample[:, :, :, 16:]), dim=3
+#cltorg        )  # (N_t, dim_y, dim_x, d_features)
 
         # Accumulate solar radiation instead of just subsampling
-        rad_features = full_sample[:, :, :, 2:4]  # (N_t', dim_y, dim_x, 2)
+#clt        rad_features = full_sample[:, :, :, 2:4]  # (N_t', dim_y, dim_x, 2)
         # Accumulate for first time step
-        init_accum_rad = torch.sum(
-            rad_features[: (subsample_index + 1)], dim=0, keepdim=True
-        )  # (1, dim_y, dim_x, 2)
+#clt        init_accum_rad = torch.sum(
+#clt            rad_features[: (subsample_index + 1)], dim=0, keepdim=True
+#clt        )  # (1, dim_y, dim_x, 2)
         # Accumulate for rest of subsampled sequence
         in_subsample_len = (
             subsample_end_index - self.subsample_step + subsample_index + 1
         )
-        rad_features_in_subsample = rad_features[
-            (subsample_index + 1) : in_subsample_len
-        ]  # (N_t*, dim_y, dim_x, 2), N_t* = (N_t-1)*ss_step
-        _, dim_y, dim_x, _ = sample.shape
-        rest_accum_rad = torch.sum(
-            rad_features_in_subsample.view(
-                self.original_sample_length - 1,
-                self.subsample_step,
-                dim_y,
-                dim_x,
-                2,
-            ),
-            dim=1,
-        )  # (N_t-1, dim_y, dim_x, 2)
-        accum_rad = torch.cat(
-            (init_accum_rad, rest_accum_rad), dim=0
-        )  # (N_t, dim_y, dim_x, 2)
-        # Replace in sample
-        sample[:, :, :, 2:4] = accum_rad
+#clt        rad_features_in_subsample = rad_features[
+#clt            (subsample_index + 1) : in_subsample_len
+#clt        ]  # (N_t*, dim_y, dim_x, 2), N_t* = (N_t-1)*ss_step
+#clt        _, dim_y, dim_x, _ = sample.shape
+#clt        rest_accum_rad = torch.sum(
+#            rad_features_in_subsample.view(
+#                self.original_sample_length - 1,
+#                self.subsample_step,
+#                dim_y,
+#                dim_x,
+#                2,
+#            ),
+#            dim=1,
+#        )  # (N_t-1, dim_y, dim_x, 2)
+#        accum_rad = torch.cat(
+#            (init_accum_rad, rest_accum_rad), dim=0
+#        )  # (N_t, dim_y, dim_x, 2)
+#        # Replace in sample
+#clt end of block        sample[:, :, :, 2:4] = accum_rad
 
         # Flatten spatial dim
         sample = sample.flatten(1, 2)  # (N_t, N_grid, d_features)
 
         # Uniformly sample time id to start sample from
+#cltthink
         init_id = torch.randint(
             0, 1 + self.original_sample_length - self.sample_length, ()
         )
@@ -162,7 +180,8 @@ class WeatherDataset(torch.utils.data.Dataset):
         # Load water coverage
         sample_datetime = sample_name[:10]
         water_path = os.path.join(
-            self.sample_dir_path, f"wtr_{sample_datetime}.npy"
+#            self.sample_dir_path, f"wtr_{sample_datetime}.npy"
+            self.sample_dir_path, f"wtr_15km.npy"
         )
         water_cover_features = torch.tensor(
             np.load(water_path), dtype=torch.float32
@@ -179,8 +198,22 @@ class WeatherDataset(torch.utils.data.Dataset):
         # TOA flux
         flux_path = os.path.join(
             self.sample_dir_path,
-            f"nwp_toa_downwelling_shortwave_flux_{sample_datetime}.npy",
+#cltorg            f"nwp_toa_downwelling_shortwave_flux_{sample_datetime}.npy",
+            f"nwp_{sample_datetime}_solar_flux_15km.npy",
         )
+#clt only flux files on 00 06, 12, 18 exist
+        if not os.path.exists(flux_path):
+        # If it doesn't exist, extract the last two characters (the hour part)
+            date_part = sample_datetime[:-2]  # The part before the last two digits
+            hour_part = int(sample_datetime[-2:])  # The last two digits (e.g., '01', '23')
+            new_hour = closest_hour(hour_part)
+            new_sample_datetime = date_part + new_hour
+            flux_path = os.path.join(
+                self.sample_dir_path,
+    #cltorg            f"nwp_toa_downwelling_shortwave_flux_{sample_datetime}.npy",
+                f"nwp_{new_sample_datetime}_solar_flux_15km.npy",
+            )
+        
         flux = torch.tensor(np.load(flux_path), dtype=torch.float32).unsqueeze(
             -1
         )  # (N_t', dim_y, dim_x, 1)
@@ -258,5 +291,17 @@ class WeatherDataset(torch.utils.data.Dataset):
         # as it is static over time
         forcing = torch.cat((water_cover_expanded, forcing_windowed), dim=2)
         # (sample_len-2, N_grid, forcing_dim)
+        print(f"init_state.shape  {init_states.shape} dtype {init_states.dtype}")
+        print(f"target_state.shape  {target_states.shape} dtype: {target_states.dtype}")
+        print(f"forcing.shape  {forcing.shape} dtype : {forcing.dtype}")
+        if torch.isnan(init_states).any() or torch.isinf(init_states).any() :
+           print("abnormal values  found  for init_states quit")
+           quit()
+        if torch.isnan(target_states).any() or torch.isinf(target_states).any() :
+           print("abnormal values  found  for target_states quit")
+        if torch.isnan(forcing).any() or torch.isinf(forcing).any() :
+           print("abnormal values  found  for forcing quit")
+           quit()
+           quit()
 
         return init_states, target_states, forcing

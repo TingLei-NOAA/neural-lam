@@ -194,7 +194,10 @@ def main(input_args=None):
     graph_dir_path = os.path.join("graphs", args.graph)
     os.makedirs(graph_dir_path, exist_ok=True)
 
-    xy = np.load(os.path.join(static_dir_path, "nwp_xy.npy"))
+    coorfile=config_loader.dataset.coor_file
+
+    xy = np.load(os.path.join(static_dir_path, coorfile))
+#clt    xy = np.load(os.path.join(static_dir_path, "nwp_xy.npy"))
 
     grid_xy = torch.tensor(xy)
     pos_max = torch.max(torch.abs(grid_xy))
@@ -222,7 +225,8 @@ def main(input_args=None):
         g = mk_2d_graph(xy, n, n)
         if args.plot:
             plot_graph(from_networkx(g), title=f"Mesh graph, level {lev}")
-            plt.show()
+#clt            plt.show()
+            plt.savefig("tlei_mesh-5.png")
 
         G.append(g)
 
@@ -303,12 +307,13 @@ def main(input_args=None):
                 plot_graph(
                     pyg_down, title=f"Down graph, {from_level} -> {to_level}"
                 )
-                plt.show()
-
+#cltorg                plt.show()
+                plt.savefig("tlei_mesh-0.png")
                 plot_graph(
                     pyg_down, title=f"Up graph, {to_level} -> {from_level}"
                 )
-                plt.show()
+#clt                plt.show()
+                plt.savefig("tlei_mesh-1.png")
 
         # Save up and down edges
         save_edges_list(up_graphs, "mesh_up", graph_dir_path)
@@ -367,7 +372,8 @@ def main(input_args=None):
 
         if args.plot:
             plot_graph(pyg_m2m, title="Mesh-to-mesh")
-            plt.show()
+#clt            plt.show()
+            plt.savefig("tlei_mesh-2.png")
 
     # Save m2m edges
     save_edges_list(m2m_graphs, "m2m", graph_dir_path)
@@ -448,7 +454,8 @@ def main(input_args=None):
 
     if args.plot:
         plot_graph(pyg_g2m, title="Grid-to-mesh")
-        plt.show()
+#        plt.show()
+        plt.savefig("tlei_mesh-3.png")
 
     #
     # Mesh2Grid
@@ -487,7 +494,8 @@ def main(input_args=None):
 
     if args.plot:
         plot_graph(pyg_m2g, title="Mesh-to-grid")
-        plt.show()
+#clt        plt.show()
+        plt.savefig("tlei_mesh-4.png")
 
     # Save g2m and m2g everything
     # g2m

@@ -59,6 +59,6 @@ grid_shape_state: [268, 238]
 projection:
   class: LambertConformal
   kwargs:
-    central_longitude: 15.0
-    central_latitude: 63.3
-    standard_parallels: [63.3, 63.3]
+    central_longitude: -96.0 
+    central_latitude: 40.0 
+    standard_parallels: [30.0, 60.0]

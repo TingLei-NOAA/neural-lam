@@ -13,6 +13,7 @@ from lightning_fabric.utilities import seed
 from . import WeatherDataset, config, utils
 from .models import GraphLAM, HiLAM, HiLAMParallel
 
+torch.set_default_dtype(torch.float32) #added by clt
 MODELS = {
     "graph_lam": GraphLAM,
     "hi_lam": HiLAM,
@@ -240,7 +241,8 @@ def main(input_args=None):
         shuffle=True,
         num_workers=args.n_workers,
     )
-    max_pred_length = (65 // args.step_length) - 2  # 19
+#clt    max_pred_length = (65 // args.step_length) - 2  # 19
+    max_pred_length = (19 // args.step_length) - 2  # 19
     val_loader = torch.utils.data.DataLoader(
         WeatherDataset(
             config_loader.dataset.name,
@@ -285,6 +287,17 @@ def main(input_args=None):
     logger = pl.loggers.WandbLogger(
         project=args.wandb_project, name=run_name, config=args
     )
+    print("thinkdeb type of precision ",type(args.precision),"value is ",args.precision)
+    print("thinkdeb checkpoint_callback",checkpoint_callback)
+    print(f"Checkpoint Callback Configuration:")
+    print(f"  dirpath: {checkpoint_callback.dirpath}")
+    print(f"  filename: {checkpoint_callback.filename}")
+    print(f"  monitor: {checkpoint_callback.monitor}")
+    print(f"  save_top_k: {checkpoint_callback.save_top_k}")
+    print(f"  mode: {checkpoint_callback.mode}")
+    print(f"  save_last: {checkpoint_callback.save_last}")
+    print(f"  every_n_epochs: {checkpoint_callback.every_n_epochs}")
+
     trainer = pl.Trainer(
         max_epochs=args.epochs,
         deterministic=True,
@@ -324,6 +337,45 @@ def main(input_args=None):
         trainer.test(model=model, dataloaders=eval_loader, ckpt_path=args.load)
     else:
         # Train model
+        for batch in train_loader:
+                print(f"Batch contains {len(batch)} elements")
+                for i, element in enumerate(batch):
+                    print(f"Element {i}: Type: {type(element)}")
+                    if isinstance(element, torch.Tensor):  # If it's a tensor, print its shape and dtype
+                        print(f"Element {i}: Shape: {element.shape}, Dtype: {element.dtype}")
+                    else:
+                        print(f"Element {i}: Content: {element}")
+        for batch in val_loader:
+                print(f"val Batch contains {len(batch)} elements")
+                for i, element in enumerate(batch):
+                    print(f"val Element {i}: Type: {type(element)}")
+                    if isinstance(element, torch.Tensor):  # If it's a tensor, print its shape and dtype
+                        print(f"val Element {i}: Shape: {element.shape}, Dtype: {element.dtype}")
+                    else:
+                        print(f"val Element {i}: Content: {element}")
+
+
+
+
+
+                print(f" Batch(lisst) length: {len(batch)}")
+        for name, param in model.named_parameters():
+          print(f"Layer: {name}, Weight dtype: {param.dtype}")
+
+
+#        for batch in train_loader:
+#            print(f"Batch content: {batch}")
+#            break
+
+
+#        for batch in train_loader:
+#            inputs, targets = batch  # This assumes your dataset returns a tuple of (inputs, targets)
+#            print(f"Inputs shape: {inputs.shape}, Inputs dtype: {inputs.dtype}")
+#            print(f"Targets shape: {targets.shape}, Targets dtype: {targets.dtype}")
+        # Ensure inputs and model are on the same device
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        model.to(device)
+        model=model.float() #added by Ting to avoid errors of different types in model.
         trainer.fit(
             model=model,
             train_dataloaders=train_loader,

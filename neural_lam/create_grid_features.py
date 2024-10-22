@@ -25,17 +25,21 @@ def main():
     config_loader = config.Config.from_file(args.data_config)
 
     static_dir_path = os.path.join("data", config_loader.dataset.name, "static")
-
+    coorfile=config_loader.dataset.coor_file
+    bc_mask_file=config_loader.dataset.bc_mask_file
+    gp_surface_file=config_loader.dataset.gp_surface_file
     # -- Static grid node features --
     grid_xy = torch.tensor(
-        np.load(os.path.join(static_dir_path, "nwp_xy.npy"))
+        np.load(os.path.join(static_dir_path,coorfile ))
+#cltorg        np.load(os.path.join(static_dir_path, "nwp_xy.npy"))
     )  # (2, N_y, N_x)
     grid_xy = grid_xy.flatten(1, 2).T  # (N_grid, 2)
     pos_max = torch.max(torch.abs(grid_xy))
     grid_xy = grid_xy / pos_max  # Divide by maximum coordinate
 
     geopotential = torch.tensor(
-        np.load(os.path.join(static_dir_path, "surface_geopotential.npy"))
+        np.load(os.path.join(static_dir_path, gp_surface_file))
+#cltorg        np.load(os.path.join(static_dir_path, "surface_geopotential.npy"))
     )  # (N_y, N_x)
     geopotential = geopotential.flatten(0, 1).unsqueeze(1)  # (N_grid,1)
     gp_min = torch.min(geopotential)
@@ -44,7 +48,8 @@ def main():
     geopotential = (geopotential - gp_min) / (gp_max - gp_min)  # (N_grid, 1)
 
     grid_border_mask = torch.tensor(
-        np.load(os.path.join(static_dir_path, "border_mask.npy")),
+        np.load(os.path.join(static_dir_path, bc_mask_file)),
+#clt        np.load(os.path.join(static_dir_path, "border_mask.npy")),
         dtype=torch.int64,
     )  # (N_y, N_x)
     grid_border_mask = (
@@ -52,6 +57,7 @@ def main():
     )  # (N_grid, 1)
 
     # Concatenate grid features
+    print("shapes ",    grid_xy.shape, geopotential.shape, grid_border_mask.shape)
     grid_features = torch.cat(
         (grid_xy, geopotential, grid_border_mask), dim=1
     )  # (N_grid, 4)

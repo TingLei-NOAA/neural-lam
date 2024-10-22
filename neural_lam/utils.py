@@ -25,6 +25,10 @@ def load_dataset_stats(dataset_name, device="cpu"):
 
     flux_stats = loads_file("flux_stats.pt")  # (2,)
     flux_mean, flux_std = flux_stats
+    for t in [data_mean , data_std,flux_stats,flux_mean,flux_std]:
+     if torch.isnan(t).any() or torch.isinf(t).any() :
+        print("abnormal values  found  for init_states quit")
+        quit()
 
     return {
         "data_mean": data_mean,
@@ -34,10 +38,13 @@ def load_dataset_stats(dataset_name, device="cpu"):
     }
 
 
-def load_static_data(dataset_name, device="cpu"):
+def load_static_data(dataset_name, device="cpu",config_loader=None):
     """
     Load static files related to dataset
     """
+    print("thinkdeb in load_static_data config_loader", config_loader)
+    print("thinkdeb in load_static_data list(config_loader)", dir(config_loader))
+    bc_mask_file=config_loader.dataset.bc_mask_file
     static_dir_path = os.path.join("data", dataset_name, "static")
 
     def loads_file(fn):
@@ -46,7 +53,8 @@ def load_static_data(dataset_name, device="cpu"):
         )
 
     # Load border mask, 1. if node is part of border, else 0.
-    border_mask_np = np.load(os.path.join(static_dir_path, "border_mask.npy"))
+#clt    border_mask_np = np.load(os.path.join(static_dir_path, "border_mask.npy"))
+    border_mask_np = np.load(os.path.join(static_dir_path, bc_mask_file))
     border_mask = (
         torch.tensor(border_mask_np, dtype=torch.float32, device=device)
         .flatten(0, 1)
@@ -71,6 +79,10 @@ def load_static_data(dataset_name, device="cpu"):
         dtype=torch.float32,
         device=device,
     )  # (d_f,)
+    for t in [border_mask , grid_static_features,step_diff_mean,step_diff_std,data_mean,data_std,param_weights]:
+     if torch.isnan(t).any() or torch.isinf(t).any() :
+        print("abnormal values  found  for  static parameters quit")
+        quit()
 
     return {
         "border_mask": border_mask,
