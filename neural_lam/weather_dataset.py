@@ -31,7 +31,8 @@ class WeatherDataset(torch.utils.data.Dataset):
     def __init__(
         self,
         dataset_name,
-        pred_length=4,
+        pred_length=5,
+#working        pred_length=4,
         split="train",
         subsample_step=3,
         standardize=True,

@@ -8,7 +8,11 @@ import pytorch_lightning as pl
 import torch
 import wandb
 
-wandb.init(mode="disabled")
+wandb_run=wandb.init(mode="disabled")
+if wandb_run == "disabled":
+   run_dir="./dr-tmp"
+else:
+   run_dir=wandb.run.dir
 # Local
 from .. import config, metrics, utils, vis
 
@@ -228,7 +232,15 @@ class ARModel(pl.LightningModule):
 
         returns: (K*d1, d2, ...)
         """
-        return self.all_gather(tensor_to_gather).flatten(0, 1)
+        print ("thinkdeb in all_gather_cat tenshor.shape is ",tensor_to_gather.shape)
+#clt        if  self.global_rank ==0 :
+        if self.trainer.num_devices ==1  :
+           print("thinkdeb self.trainer.num_devices ==1")
+           
+           return self.all_gather(tensor_to_gather)
+        else: 
+           return self.all_gather(tensor_to_gather).flatten(0, 1)
+          
 
     # newer lightning versions requires batch_idx argument, even if unused
     # pylint: disable-next=unused-argument
@@ -399,6 +411,7 @@ class ARModel(pl.LightningModule):
                 zip(pred_slice, target_slice), start=1
             ):
                 # Create one figure per variable at this time step
+                print("thinkdeb before plot_prediction")
                 var_figs = [
                     vis.plot_prediction(
                         pred_t[:, var_i],
@@ -418,30 +431,42 @@ class ARModel(pl.LightningModule):
                     )
                 ]
 
-                example_i = self.plotted_examples
-                wandb.log(
-                    {
-                        f"{var_name}_example_{example_i}": wandb.Image(fig)
-                        for var_name, fig in zip(
-                            self.config_loader.dataset.var_names, var_figs
-                        )
-                    }
-                )
+                if wandb_run == "disabled":
+                    example_i = self.plotted_examples
+                    for var_name, fig in zip(self.config_loader.dataset.var_names, var_figs):
+                        filename = f"{var_name}_example_{example_i}.png"  # Define the file format and name
+                        fig_path = os.path.join(run_dir, filename)  # Combine directory and filename
+                        fig.savefig(fig_path)  # Save the figure
+                        plt.close(fig)  # Close the figure to free up memory
+                else:
+                    example_i = self.plotted_examples
+                    wandb.log(
+                        {
+                            f"{var_name}_example_{example_i}": wandb.Image(fig)
+                            for var_name, fig in zip(
+                                self.config_loader.dataset.var_names, var_figs
+                            )
+                        }
+                    )
                 plt.close(
                     "all"
                 )  # Close all figs for this time step, saves memory
 
             # Save pred and target as .pt files
+          
+            print("thinkdeb wandb dirs ",wandb.run.dir)
             torch.save(
                 pred_slice.cpu(),
                 os.path.join(
-                    wandb.run.dir, f"example_pred_{self.plotted_examples}.pt"
+                    run_dir, f"example_pred_{self.plotted_examples}.pt"
+#cltorg                    wandb.run.dir, f"example_pred_{self.plotted_examples}.pt"
                 ),
             )
             torch.save(
                 target_slice.cpu(),
                 os.path.join(
-                    wandb.run.dir, f"example_target_{self.plotted_examples}.pt"
+                    run_dir, f"example_target_{self.plotted_examples}.pt"
+#clt                    wandb.run.dir, f"example_target_{self.plotted_examples}.pt"
                 ),
             )
 
@@ -501,9 +526,11 @@ class ARModel(pl.LightningModule):
         """
         log_dict = {}
         for metric_name, metric_val_list in metrics_dict.items():
+#tothink
             metric_tensor = self.all_gather_cat(
                 torch.cat(metric_val_list, dim=0)
             )  # (N_eval, pred_steps, d_f)
+            print("thinkdeb in ar_model, metric_tensor.shape ",metric_tensor.shape )
 
             if self.trainer.is_global_zero:
                 metric_tensor_averaged = torch.mean(metric_tensor, dim=0)
@@ -515,7 +542,9 @@ class ARModel(pl.LightningModule):
                     metric_name = metric_name.replace("mse", "rmse")
 
                 # Note: we here assume rescaling for all metrics is linear
+                print("thinkdeb in ar_model, metric_tensorship ",metric_tensor_averaged.shape,' ',self.data_std.shape) 
                 metric_rescaled = metric_tensor_averaged * self.data_std
+                print("thinkdeb2 in ar_model, metric_rescaled ",metric_rescaled.shape) 
                 # (pred_steps, d_f)
                 log_dict.update(
                     self.create_metric_log_dict(

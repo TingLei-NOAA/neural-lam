@@ -15,6 +15,7 @@ def plot_error_map(errors, data_config, title=None, step_length=3):
     errors: (pred_steps, d_f)
     """
     errors_np = errors.T.cpu().numpy()  # (d_f, pred_steps)
+    print("thinkdeb errors_np.shape ",errors_np.shape)
     d_f, pred_steps = errors_np.shape
 
     # Normalize all errors to [0,1] for color map

@@ -3,6 +3,7 @@ import json
 import random
 import time
 from argparse import ArgumentParser
+import os
 
 # Third-party
 import pytorch_lightning as pl
@@ -190,7 +191,7 @@ def main(input_args=None):
     parser.add_argument(
         "--val_steps_to_log",
         type=list,
-        default=[1, 2, 3, 5, 10, 15, 19],
+        default=[1, 2, 3 ],
         help="Steps to log val loss for (default: [1, 2, 3, 5, 10, 15, 19])",
     )
     parser.add_argument(
@@ -258,7 +259,7 @@ def main(input_args=None):
     )
 
     # Instantiate model + trainer
-    if torch.cuda.is_available():
+    if torch.cuda.is_available() and 0 > 2: #cltthinkdeb
         device_name = "cuda"
         torch.set_float32_matmul_precision(
             "high"
@@ -266,6 +267,7 @@ def main(input_args=None):
     else:
         device_name = "cpu"
 
+    device_name = "cpu" #cltthinkdeb 
     # Load model parameters Use new args for model
     model_class = MODELS[args.model]
     model = model_class(args)
@@ -277,6 +279,7 @@ def main(input_args=None):
         f"{prefix}{args.model}-{args.processor_layers}x{args.hidden_dim}-"
         f"{time.strftime('%m_%d_%H')}-{random_run_id:04d}"
     )
+    print ("thinkdeb run_name is ",run_name)
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
         dirpath=f"saved_models/{run_name}",
         filename="min_val_loss",
@@ -297,12 +300,16 @@ def main(input_args=None):
     print(f"  mode: {checkpoint_callback.mode}")
     print(f"  save_last: {checkpoint_callback.save_last}")
     print(f"  every_n_epochs: {checkpoint_callback.every_n_epochs}")
+    ntasks_per_node = int(os.getenv("SLURM_NTASKS_PER_NODE", 1))
+    num_nodes = int(os.getenv("SLURM_NNODES", 1))  # Defaults to 1 if not set by SLURM
 
     trainer = pl.Trainer(
         max_epochs=args.epochs,
         deterministic=True,
-        strategy="ddp",
+        strategy="auto", #        strategy="ddp",
         accelerator=device_name,
+        devices=ntasks_per_node,
+        num_nodes=num_nodes,
         logger=logger,
         log_every_n_steps=1,
         callbacks=[checkpoint_callback],
@@ -334,7 +341,29 @@ def main(input_args=None):
             )
 
         print(f"Running evaluation on {args.eval}")
+        # Train model
+#        for batch in eval_loader:
+#                print(f"Batch contains {len(batch)} elements")
+#                for i, element in enumerate(batch):
+#                    print(f"Element {i}: Type: {type(element)}")
+#                    if isinstance(element, torch.Tensor):  # If it's a tensor, print its shape and dtype
+#                        print(f"Element {i}: Shape: {element.shape}, Dtype: {element.dtype}")
+#                    else:
+#                        print(f"Element {i}: Content: {element}")
+#        for batch in eval_loader:
+#                print(f"val Batch contains {len(batch)} elements")
+#                for i, element in enumerate(batch):
+#                    print(f"val Element {i}: Type: {type(element)}")
+#                    if isinstance(element, torch.Tensor):  # If it's a tensor, print its shape and dtype
+#                        #print(f"val Element {i}: Shape: {element.shape}, Dtype: {element.dtype}")
+#                    else:
+#                        print(f"val Element {i}: Content: {element}")
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') #clt
+        print(f'thinkdebUsing device: {device}')
+        model.to(device)                                                      #clt
+        model=model.float() #added by Ting to avoid errors of different types in model.
         trainer.test(model=model, dataloaders=eval_loader, ckpt_path=args.load)
+        print("thinkdeb after trainer.test")
     else:
         # Train model
         for batch in train_loader:
@@ -374,6 +403,8 @@ def main(input_args=None):
 #            print(f"Targets shape: {targets.shape}, Targets dtype: {targets.dtype}")
         # Ensure inputs and model are on the same device
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        device = torch.device('cpu') #thinkdeb555
+        print(f'thinkdebUsing device: {device}')
         model.to(device)
         model=model.float() #added by Ting to avoid errors of different types in model.
         trainer.fit(
@@ -382,6 +413,10 @@ def main(input_args=None):
             val_dataloaders=val_loader,
             ckpt_path=args.load,
         )
+       # After training
+        completed_epochs = trainer.current_epoch
+        print(f"Training completed after {completed_epochs} epochs.")
+
 
 
 if __name__ == "__main__":
