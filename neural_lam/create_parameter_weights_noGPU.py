@@ -2,6 +2,8 @@
 import os
 import subprocess
 from argparse import ArgumentParser
+import psutil
+import gc
 
 # Third-party
 import numpy as np
@@ -30,27 +32,12 @@ class PaddedWeatherDataset(torch.utils.data.Dataset):
         )
 
     def __getitem__(self, idx):
-        sample=self.base_dataset[
+        sample = self.base_dataset[
             self.original_indices[-1]
             if idx >= self.total_samples
             else idx % len(self.base_dataset)
         ]
         return sample
-    def __getitem__(self, idx):
-        return self.base_dataset[
-            self.original_indices[-1]
-            if idx >= self.total_samples
-            else idx % len(self.base_dataset)
-        ]
-
-
-
-
-        print(f"Sample {idx} has shape: {sample.shape}")
-#clt        return self.base_dataset[
-#clt            self.original_indices[-1]
-#clt            if idx >= self.total_samples
-#clt            else idx % len(self.base_dataset)
 
     def __len__(self):
         return self.total_samples + self.padded_samples
@@ -117,8 +104,8 @@ def save_stats(
     mean = torch.mean(means, dim=0)  # (d_features,)
     second_moment = torch.mean(squares, dim=0)  # (d_features,)
     std = torch.sqrt(second_moment - mean**2)  # (d_features,)
-    print("thinkdeb save_stats static_dir_path ",static_dir_path) 
-    print("thinkdeb save_stats filename ", f"{filename_prefix}_mean.pt") 
+    print("thinkdeb save_stats static_dir_path ", static_dir_path)
+    print("thinkdeb save_stats filename ", f"{filename_prefix}_mean.pt")
     torch.save(
         mean.cpu(), os.path.join(static_dir_path, f"{filename_prefix}_mean.pt")
     )
@@ -141,6 +128,53 @@ def save_stats(
         torch.stack((flux_mean, flux_std)).cpu(),
         os.path.join(static_dir_path, "flux_stats.pt"),
     )
+
+
+def print_memory_usage(prefix=""):
+    """Print current memory usage"""
+    process = psutil.Process(os.getpid())
+    memory_mb = process.memory_info().rss / 1024 / 1024
+    print(f"{prefix} Memory usage: {memory_mb:.2f} MB")
+
+
+def cleanup_memory():
+    """Force garbage collection and clear cuda cache if available"""
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+
+def process_batch_with_cleanup(init_batch, target_batch, forcing_batch, device):
+    """Process a single batch with memory cleanup"""
+    try:
+        # Move to device and process
+        init_batch = init_batch.to(device)
+        target_batch = target_batch.to(device)
+        forcing_batch = forcing_batch.to(device)
+
+        # Calculate main batch statistics
+        batch = torch.cat((init_batch, target_batch), dim=1)
+        means = torch.mean(batch, dim=(1, 2)).cpu()
+        squares = torch.mean(batch**2, dim=(1, 2)).cpu()
+
+        # Clear main batch memory
+        del batch
+        cleanup_memory()
+
+        # Calculate flux statistics
+        flux_batch = forcing_batch[:, :, :, 1]
+        flux_means = torch.mean(flux_batch).cpu()
+        flux_squares = torch.mean(flux_batch**2).cpu()
+
+        # Clear remaining tensors
+        del init_batch, target_batch, forcing_batch, flux_batch
+        cleanup_memory()
+
+        return means, squares, flux_means, flux_squares
+    except Exception as e:
+        print(f"Error in batch processing: {e}")
+        cleanup_memory()
+        raise
 
 
 def main():
@@ -169,7 +203,6 @@ def main():
     parser.add_argument(
         "--n_workers",
         type=int,
-#clt        default=4,
         default=0,
         help="Number of workers in data loader (default: 4)",
     )
@@ -187,30 +220,22 @@ def main():
     config_loader = config.Config.from_file(args.data_config)
 
     if distributed:
-
         setup(rank, world_size)
         device = torch.device(
             f"cuda:{rank}" if torch.cuda.is_available() else "cpu"
         )
-        print (f" device is set as {device} but was forced to cpu")
-        device="cpu"
+        print(f" device is set as {device} but was forced to cpu")
+        device = "cpu"
         torch.cuda.set_device(device) if torch.cuda.is_available() else None
 
     if rank == 0:
         static_dir_path = os.path.join(
             "data", config_loader.dataset.name, "static"
         )
+        print_memory_usage("Initial")
+
         # Create parameter weights based on height
         # based on fig A.1 in graph cast paper
-#clt        w_dict = {
-#clt            "2": 1.0,
-#clt            "0": 0.1,
-#clt            "65": 0.065,
-#clt            "1000": 0.1,
-#clt            "850": 0.05,
-#clt            "500": 0.03,
-#clt        }
-
         w_dict = {
             "2": 1.0,
             "0": 0.1,
@@ -221,10 +246,6 @@ def main():
             "500": 0.03,
             "200": 0.01,
         }
-
-
-
-
 
         w_list = np.array(
             [
@@ -237,13 +258,13 @@ def main():
             os.path.join(static_dir_path, "parameter_weights.npy"),
             w_list.astype("float32"),
         )
-    print("thinkdeb 1") 
+    print("thinkdeb 1")
+
     # Load dataset without any subsampling
     ds = WeatherDataset(
         config_loader.dataset.name,
         split="train",
         subsample_step=1,
-#clt        pred_length=63,
         pred_length=17,
         standardize=False,
     )
@@ -267,36 +288,35 @@ def main():
     )
 
     if rank == 0:
-        print("Computing mean and std.-dev. for parameters...")
+        print_memory_usage("After dataset load")
+
     means, squares, flux_means, flux_squares = [], [], [], []
 
-    print("thinkdeb 2") 
+    print("thinkdeb 2")
     # Process the batch
     for init_batch, target_batch, forcing_batch in tqdm(loader):
-        if distributed:
-            init_batch, target_batch, forcing_batch = (
-                init_batch.to(device),
-                target_batch.to(device),
-                forcing_batch.to(device),
-            )
-        # (N_batch, N_t, N_grid, d_features)
-        print("thinkdeb 3") 
-        batch = torch.cat((init_batch, target_batch), dim=1)
-        print("thinkdeb 4") 
-        # Flux at 1st windowed position is index 1 in forcing
-        flux_batch = forcing_batch[:, :, :, 1]
-        print("thinkdeb 5") 
-        # (N_batch, d_features,)
-        means.append(torch.mean(batch, dim=(1, 2)).cpu())
-        print("thinkdeb 6") 
-        squares.append(
-            torch.mean(batch**2, dim=(1, 2)).cpu()
-        )  # (N_batch, d_features,)
-        flux_means.append(torch.mean(flux_batch).cpu())  # (,)
-        flux_squares.append(torch.mean(flux_batch**2).cpu())  # (,)
-        print("thinkdeb 7") 
+        if rank == 0:
+            print_memory_usage("Before batch processing")
+
+        # Process batch with cleanup
+        batch_means, batch_squares, batch_flux_means, batch_flux_squares = process_batch_with_cleanup(
+            init_batch, target_batch, forcing_batch, device
+        )
+
+        means.append(batch_means)
+        squares.append(batch_squares)
+        flux_means.append(batch_flux_means)
+        flux_squares.append(batch_flux_squares)
+
+        if rank == 0:
+            print_memory_usage("After batch processing")
+
+        cleanup_memory()
 
     if distributed and world_size > 1:
+        if rank == 0:
+            print_memory_usage("Before gathering results")
+
         means_gathered, squares_gathered = [None] * world_size, [
             None
         ] * world_size
@@ -323,16 +343,12 @@ def main():
             flux_means, flux_squares = [
                 flux_means_gathered[i] for i in original_indices
             ], [flux_squares_gathered[i] for i in original_indices]
-    else:
-        print("thinkdeb 8") 
-        means = [torch.cat(means, dim=0)]  # (N_batch, d_features,)
-        squares = [torch.cat(squares, dim=0)]  # (N_batch, d_features,)
-        flux_means = [torch.tensor(flux_means)]  # (N_batch,)
-        flux_squares = [torch.tensor(flux_squares)]  # (N_batch,)
-        print("thinkdeb 9 rank ",rank) 
-        print("static_dir_path  ",static_dir_path) 
+
+        if rank == 0:
+            print_memory_usage("After gathering results")
 
     if rank == 0:
+        print_memory_usage("Before saving stats")
         save_stats(
             static_dir_path,
             means,
@@ -341,9 +357,9 @@ def main():
             flux_squares,
             "parameter",
         )
+        print_memory_usage("After saving stats")
 
-    if distributed:
-        dist.barrier()
+    cleanup_memory()
 
     if rank == 0:
         print("Computing mean and std.-dev. for one-step differences...")
@@ -351,7 +367,6 @@ def main():
         config_loader.dataset.name,
         split="train",
         subsample_step=1,
-#clt        pred_length=63,
         pred_length=17,
         standardize=True,
     )  # Re-load with standardization
@@ -373,7 +388,6 @@ def main():
         num_workers=args.n_workers,
         sampler=sampler_standard,
     )
-#clt    used_subsample_len = (65 // args.step_length) * args.step_length
     used_subsample_len = (19 // args.step_length) * args.step_length
 
     diff_means, diff_squares = [], []
@@ -385,9 +399,9 @@ def main():
             )
         # (N_batch, N_t', N_grid, d_features)
         batch = torch.cat((init_batch, target_batch), dim=1)
-        print ("thinkdeb init_batch.sahep ",init_batch.shape,' ',target_batch.shape)
-        print("thinkdeb batch.shape ",batch.shape)
-        print("thinkdeb 3 ", " ",used_subsample_len," ",args.step_length)
+        print("thinkdeb init_batch.shape ", init_batch.shape, " ", target_batch.shape)
+        print("thinkdeb batch.shape ", batch.shape)
+        print("thinkdeb 3 ", " ", used_subsample_len, " ", args.step_length)
         print("thinkdeb 3 ", [ss_i for ss_i in range(args.step_length)])
         # Note: batch contains only 1h-steps
         stepped_batch = torch.cat(
@@ -405,7 +419,7 @@ def main():
         # (N_batch', d_features,)
         diff_squares.append(torch.mean(batch_diffs**2, dim=(1, 2)).cpu())
         # (N_batch', d_features,)
-        print("thinkdeb 10") 
+        print("thinkdeb 10")
 
     if distributed and world_size > 1:
         dist.barrier()
@@ -436,7 +450,7 @@ def main():
 
     diff_means = [torch.cat(diff_means, dim=0)]  # (N_batch', d_features,)
     diff_squares = [torch.cat(diff_squares, dim=0)]  # (N_batch', d_features,)
-    print("thinkdeb 11 rank",rank) 
+    print("thinkdeb 11 rank", rank)
 
     if rank == 0:
         save_stats(static_dir_path, diff_means, diff_squares, [], [], "diff")
