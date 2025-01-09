@@ -52,6 +52,7 @@ def main():
 #clt        np.load(os.path.join(static_dir_path, "border_mask.npy")),
         dtype=torch.int64,
     )  # (N_y, N_x)
+    print("shape of bord_mask ",grid_border_mask.shape)
     grid_border_mask = (
         grid_border_mask.flatten(0, 1).to(torch.float).unsqueeze(1)
     )  # (N_grid, 1)

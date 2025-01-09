@@ -192,6 +192,8 @@ def main():
         device = torch.device(
             f"cuda:{rank}" if torch.cuda.is_available() else "cpu"
         )
+        print (f" device is set as {device} but was forced to cpu")
+        device="cpu"
         torch.cuda.set_device(device) if torch.cuda.is_available() else None
 
     if rank == 0:

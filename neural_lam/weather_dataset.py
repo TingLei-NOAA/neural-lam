@@ -17,10 +17,12 @@ class WeatherDataset(torch.utils.data.Dataset):
     For our dataset:
     N_t' = 65
     N_t = 65//subsample_step (= 21 for 3h steps)
-    dim_y = 268
+    dim_y = 1059 
 #15km rrfs dim_y=268
-    dim_x = 238
+#3km rrfs dim_y=1059
+    dim_x = 1799 
 #15km rrfs    dim_x = 238
+#3km rrfs    dim_x = 1799 
     N_grid = 268x238 = 63784
     d_features = 17 (d_features' = 18)
 #15km rrfs d_features=41
@@ -54,6 +56,7 @@ class WeatherDataset(torch.utils.data.Dataset):
         )
         self.sample_names = [path.split("/")[-1][4:-4] for path in sample_paths]
 # for ecample : nwp_2024050718_mbr002_15km.npy
+# or for 3km for ecample : nwp_2024050718_mbr002.npy
 #        self.sample_names = [path.split("/")[-1][4:-9] for path in sample_paths]
         print("thinkdeb sample_dir_path ",self.sample_dir_path)
         print("thinkdeb sample_name ",*self.sample_names)
@@ -182,7 +185,8 @@ class WeatherDataset(torch.utils.data.Dataset):
         sample_datetime = sample_name[:10]
         water_path = os.path.join(
 #            self.sample_dir_path, f"wtr_{sample_datetime}.npy"
-            self.sample_dir_path, f"wtr_15km.npy"
+#clt for 15km data self.sample_dir_path, f"wtr_15km.npy"
+            self.sample_dir_path, f"wtr.npy"
         )
         water_cover_features = torch.tensor(
             np.load(water_path), dtype=torch.float32
@@ -200,7 +204,8 @@ class WeatherDataset(torch.utils.data.Dataset):
         flux_path = os.path.join(
             self.sample_dir_path,
 #cltorg            f"nwp_toa_downwelling_shortwave_flux_{sample_datetime}.npy",
-            f"nwp_{sample_datetime}_solar_flux_15km.npy",
+                 f"nwp_{sample_datetime}_solar_flux.npy", #clt for 3km case
+#clt             f"nwp_{sample_datetime}_solar_flux_15km.npy",
         )
 #clt only flux files on 00 06, 12, 18 exist
         if not os.path.exists(flux_path):
@@ -212,7 +217,8 @@ class WeatherDataset(torch.utils.data.Dataset):
             flux_path = os.path.join(
                 self.sample_dir_path,
     #cltorg            f"nwp_toa_downwelling_shortwave_flux_{sample_datetime}.npy",
-                f"nwp_{new_sample_datetime}_solar_flux_15km.npy",
+                f"nwp_{new_sample_datetime}_solar_flux.npy", #clt for 3km 
+#clt for 1tkmm                f"nwp_{new_sample_datetime}_solar_flux_15km.npy",
             )
         
         flux = torch.tensor(np.load(flux_path), dtype=torch.float32).unsqueeze(

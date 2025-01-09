@@ -259,7 +259,7 @@ def main(input_args=None):
     )
 
     # Instantiate model + trainer
-    if torch.cuda.is_available() and 0 > 2: #cltthinkdeb
+    if torch.cuda.is_available() : 
         device_name = "cuda"
         torch.set_float32_matmul_precision(
             "high"
@@ -267,7 +267,7 @@ def main(input_args=None):
     else:
         device_name = "cpu"
 
-    device_name = "cpu" #cltthinkdeb 
+#cltdebug    device_name = "cpu" #cltthinkdeb 
     # Load model parameters Use new args for model
     model_class = MODELS[args.model]
     model = model_class(args)
