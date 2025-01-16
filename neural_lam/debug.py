@@ -2,7 +2,6 @@
 import os
 import subprocess
 from argparse import ArgumentParser
-import psutil
 
 # Third-party
 import numpy as np
@@ -37,12 +36,6 @@ class PaddedWeatherDataset(torch.utils.data.Dataset):
             else idx % len(self.base_dataset)
         ]
         return sample
-    def __getitem__(self, idx):
-        return self.base_dataset[
-            self.original_indices[-1]
-            if idx >= self.total_samples
-            else idx % len(self.base_dataset)
-        ]
 
 
 
@@ -144,85 +137,6 @@ def save_stats(
     )
 
 
-def process_batch_efficiently(batch, device, delete_after_use=True):
-    """Process a single batch efficiently with memory cleanup"""
-    init_batch, target_batch, forcing_batch = batch
-    
-    # Move to device one at a time
-    init_batch = init_batch.to(device)
-    target_batch = target_batch.to(device)
-    forcing_batch = forcing_batch.to(device)
-    
-    # Process in smaller chunks
-    batch = torch.cat((init_batch, target_batch), dim=1)
-    flux_batch = forcing_batch[:, :, :, 1]
-    
-    # Calculate statistics
-    means = torch.mean(batch, dim=(1, 2))
-    squares = torch.mean(batch**2, dim=(1, 2))
-    flux_means = torch.mean(flux_batch)
-    flux_squares = torch.mean(flux_batch**2)
-    
-    # Move results to CPU and convert to numpy to free GPU memory
-    means = means.cpu()
-    squares = squares.cpu()
-    flux_means = flux_means.cpu()
-    flux_squares = flux_squares.cpu()
-    
-    if delete_after_use:
-        # Clean up GPU memory
-        del init_batch, target_batch, forcing_batch, batch, flux_batch
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-    
-    return means, squares, flux_means, flux_squares
-
-
-def process_in_subbatches(batch, sub_batch_size=4):
-    """Process a large batch in smaller chunks"""
-    init_batch, target_batch, forcing_batch = batch
-    total_size = init_batch.size(0)
-    
-    sub_means = []
-    sub_squares = []
-    sub_flux_means = []
-    sub_flux_squares = []
-    
-    for i in range(0, total_size, sub_batch_size):
-        end_idx = min(i + sub_batch_size, total_size)
-        sub_init = init_batch[i:end_idx]
-        sub_target = target_batch[i:end_idx]
-        sub_forcing = forcing_batch[i:end_idx]
-        
-        # Process sub-batch
-        sub_batch = torch.cat((sub_init, sub_target), dim=1)
-        sub_flux = sub_forcing[:, :, :, 1]
-        
-        # Calculate statistics
-        sub_means.append(torch.mean(sub_batch, dim=(1, 2)))
-        sub_squares.append(torch.mean(sub_batch**2, dim=(1, 2)))
-        sub_flux_means.append(torch.mean(sub_flux))
-        sub_flux_squares.append(torch.mean(sub_flux**2))
-        
-        # Clean up
-        del sub_batch, sub_flux
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-    
-    # Combine results
-    means = torch.cat(sub_means, dim=0)
-    squares = torch.cat(sub_squares, dim=0)
-    flux_means = torch.mean(torch.tensor(sub_flux_means))
-    flux_squares = torch.mean(torch.tensor(sub_flux_squares))
-    
-    return means, squares, flux_means, flux_squares
-
-
-def print_memory_usage():
-    process = psutil.Process(os.getpid())
-    print(f"Memory usage: {process.memory_info().rss / 1024 / 1024:.2f} MB")
-
-
 def main():
     """
     Pre-compute parameter weights to be used in loss function
@@ -237,7 +151,7 @@ def main():
     parser.add_argument(
         "--batch_size",
         type=int,
-        default=16,
+        default=4,
         help="Batch size when iterating over the dataset",
     )
     parser.add_argument(
@@ -249,19 +163,15 @@ def main():
     parser.add_argument(
         "--n_workers",
         type=int,
+#clt        default=4,
         default=0,
-        help="Number of workers in data loader (default: 0)",
+        help="Number of workers in data loader (default: 4)",
     )
     parser.add_argument(
         "--distributed",
         type=int,
         default=0,
         help="Run the script in distributed mode (1) or not (0) (default: 0)",
-    )
-    parser.add_argument(
-        "--memory_efficient",
-        action="store_true",
-        help="Enable memory efficient processing",
     )
     args = parser.parse_args()
     distributed = bool(args.distributed)
@@ -271,13 +181,14 @@ def main():
     config_loader = config.Config.from_file(args.data_config)
 
     if distributed:
+
         setup(rank, world_size)
         device = torch.device(
             f"cuda:{rank}" if torch.cuda.is_available() else "cpu"
         )
-        print(f" device is set as {device} but was forced to cpu")
-        device = "cpu"
-        # Remove the cuda.set_device call since we're forcing CPU
+        print (f" device is set as {device} but was forced to cpu")
+        device="cpu"
+#clt since cpu is forced to be used        torch.cuda.set_device(device) if torch.cuda.is_available() else None
 
     if rank == 0:
         static_dir_path = os.path.join(
@@ -345,9 +256,8 @@ def main():
         ds,
         args.batch_size,
         shuffle=False,
-        num_workers=min(args.n_workers, 2),
+        num_workers=args.n_workers,
         sampler=sampler,
-        pin_memory=False,
     )
 
     if rank == 0:
@@ -356,33 +266,30 @@ def main():
 
     print("thinkdeb 2") 
     # Process the batch
-    for batch in tqdm(loader):
-        if rank == 0:
-            print_memory_usage()
-        
+    for init_batch, target_batch, forcing_batch in tqdm(loader):
         if distributed:
             init_batch, target_batch, forcing_batch = (
-                batch[0].to(device),
-                batch[1].to(device),
-                batch[2].to(device),
+                init_batch.to(device),
+                target_batch.to(device),
+                forcing_batch.to(device),
             )
-        
-        # Free memory after processing
-        batch_means, batch_squares, batch_flux_means, batch_flux_squares = process_in_subbatches(
-            batch, sub_batch_size=4
-        )
-        
-        means.append(batch_means)
-        squares.append(batch_squares)
-        flux_means.append(batch_flux_means)
-        flux_squares.append(batch_flux_squares)
-        
-        if rank == 0:
-            print_memory_usage()
-        
-        # Optional: Clear some memory after each batch
-        if args.memory_efficient:
-            torch.cuda.empty_cache() if torch.cuda.is_available() else None
+        # (N_batch, N_t, N_grid, d_features)
+        print(f"thinkdeb 3 init/target batch shape {init_batch.shape} {target_batch.shape}") 
+        batch = torch.cat((init_batch, target_batch), dim=1)
+        print(f"thinkdeb 3 total batch shape {batch.shape}") 
+        print("thinkdeb 4") 
+        # Flux at 1st windowed position is index 1 in forcing
+        flux_batch = forcing_batch[:, :, :, 1]
+        print("thinkdeb 5") 
+        # (N_batch, d_features,)
+        means.append(torch.mean(batch, dim=(1, 2)).cpu())
+        print("thinkdeb 6") 
+        squares.append(
+            torch.mean(batch**2, dim=(1, 2)).cpu()
+        )  # (N_batch, d_features,)
+        flux_means.append(torch.mean(flux_batch).cpu())  # (,)
+        flux_squares.append(torch.mean(flux_batch**2).cpu())  # (,)
+        print("thinkdeb 7") 
 
     if distributed and world_size > 1:
         means_gathered, squares_gathered = [None] * world_size, [
@@ -391,34 +298,32 @@ def main():
         flux_means_gathered, flux_squares_gathered = [None] * world_size, [
             None
         ] * world_size
+        print(f"thinkxxx rank = {rank} size of means len(means.shape)")
         dist.all_gather_object(means_gathered, torch.cat(means, dim=0))
+        print(f"thinkxxx rank = {rank} size of means_gathered {len(means_gathered)}")
         dist.all_gather_object(squares_gathered, torch.cat(squares, dim=0))
         dist.all_gather_object(flux_means_gathered, flux_means)
         dist.all_gather_object(flux_squares_gathered, flux_squares)
 
         if rank == 0:
-            means_gathered = torch.cat(means_gathered, dim=0)
-            squares_gathered = torch.cat(squares_gathered, dim=0)
-            flux_means_gathered = torch.tensor(flux_means_gathered)
-            flux_squares_gathered = torch.tensor(flux_squares_gathered)
+            print(f"thinkxxx means_gather shape before {len(means_gathered)}")
+            means_gathered, squares_gathered = torch.cat(
+                means_gathered, dim=0
+            ), torch.cat(squares_gathered, dim=0)
+            print(f"thinkxxx means_gather shape after {len(means_gathered)}")
+            flux_means_gathered, flux_squares_gathered = torch.tensor(
+                flux_means_gathered
+            ), torch.tensor(flux_squares_gathered)
+            print(f"thinkxxx0 flux_means_gather shape after {len(flux_means_gathered)}")
 
             original_indices = ds.get_original_indices()
-            
-            if max(original_indices) >= means_gathered.size(0):
-                raise ValueError(
-                    f"Index out of bounds: max index {max(original_indices)} >= "
-                    f"tensor size {means_gathered.size(0)}"
-                )
-            
-            print(f"Debug - Tensor sizes:")
-            print(f"means_gathered size: {means_gathered.size()}")
-            print(f"original_indices length: {len(original_indices)}")
-            print(f"original_indices range: [{min(original_indices)}, {max(original_indices)}]")
-            
-            means = [means_gathered[i] for i in original_indices]
-            squares = [squares_gathered[i] for i in original_indices]
-            flux_means = [flux_means_gathered[i] for i in original_indices]
-            flux_squares = [flux_squares_gathered[i] for i in original_indices]
+            print(f"thinkxxx original indices {original_indices}")
+            means, squares = [means_gathered[i] for i in original_indices], [
+                squares_gathered[i] for i in original_indices
+            ]
+            flux_means, flux_squares = [
+                flux_means_gathered[i] for i in original_indices
+            ], [flux_squares_gathered[i] for i in original_indices]
     else:
         print("thinkdeb 8") 
         means = [torch.cat(means, dim=0)]  # (N_batch, d_features,)
@@ -466,9 +371,8 @@ def main():
         ds_standard,
         args.batch_size,
         shuffle=False,
-        num_workers=min(args.n_workers, 2),
+        num_workers=args.n_workers,
         sampler=sampler_standard,
-        pin_memory=False,
     )
 #clt    used_subsample_len = (65 // args.step_length) * args.step_length
     used_subsample_len = (19 // args.step_length) * args.step_length

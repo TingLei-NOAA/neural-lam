@@ -368,7 +368,12 @@ def main():
 
     print("thinkdeb 2")
     # Process the batch
-    for init_batch, target_batch, forcing_batch in tqdm(loader):
+    for init_batch, target_batch, forcing_batch in tqdm(
+        loader,
+        mininterval=60.0,  # Minimum time between updates (in seconds)
+        maxinterval=300.0,  # Maximum time between updates (in seconds)
+        disable=rank != 0,  # Only show progress for rank 0
+    ):
         if rank == 0:
             print_memory_usage("Before batch processing")
         

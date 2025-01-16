@@ -207,6 +207,7 @@ def main(input_args=None):
         help="""JSON string with variable-IDs and lead times to log watched
              metrics (e.g. '{"1": [1, 2], "3": [3, 4]}')""",
     )
+    
     args = parser.parse_args(input_args)
     args.var_leads_metrics_watch = {
         int(k): v for k, v in json.loads(args.var_leads_metrics_watch).items()
@@ -366,54 +367,17 @@ def main(input_args=None):
         print("thinkdeb after trainer.test")
     else:
         # Train model
-        for batch in train_loader:
-                print(f"Batch contains {len(batch)} elements")
-                for i, element in enumerate(batch):
-                    print(f"Element {i}: Type: {type(element)}")
-                    if isinstance(element, torch.Tensor):  # If it's a tensor, print its shape and dtype
-                        print(f"Element {i}: Shape: {element.shape}, Dtype: {element.dtype}")
-                    else:
-                        print(f"Element {i}: Content: {element}")
-        for batch in val_loader:
-                print(f"val Batch contains {len(batch)} elements")
-                for i, element in enumerate(batch):
-                    print(f"val Element {i}: Type: {type(element)}")
-                    if isinstance(element, torch.Tensor):  # If it's a tensor, print its shape and dtype
-                        print(f"val Element {i}: Shape: {element.shape}, Dtype: {element.dtype}")
-                    else:
-                        print(f"val Element {i}: Content: {element}")
-
-
-
-
-
-                print(f" Batch(lisst) length: {len(batch)}")
-        for name, param in model.named_parameters():
-          print(f"Layer: {name}, Weight dtype: {param.dtype}")
-
-
-#        for batch in train_loader:
-#            print(f"Batch content: {batch}")
-#            break
-
-
-#        for batch in train_loader:
-#            inputs, targets = batch  # This assumes your dataset returns a tuple of (inputs, targets)
-#            print(f"Inputs shape: {inputs.shape}, Inputs dtype: {inputs.dtype}")
-#            print(f"Targets shape: {targets.shape}, Targets dtype: {targets.dtype}")
-        # Ensure inputs and model are on the same device
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         device = torch.device('cpu') #thinkdeb555
         print(f'thinkdebUsing device: {device}')
         model.to(device)
-        model=model.float() #added by Ting to avoid errors of different types in model.
+        model = model.float() #added by Ting to avoid errors of different types in model.
         trainer.fit(
             model=model,
             train_dataloaders=train_loader,
             val_dataloaders=val_loader,
             ckpt_path=args.load,
         )
-       # After training
         completed_epochs = trainer.current_epoch
         print(f"Training completed after {completed_epochs} epochs.")
 
