@@ -1,0 +1,184 @@
+1:  device is set as cuda:1 but was forced to cpu
+1: thinkdeb 1
+1: thinkdeb sample_dir_path  data/rrfs_3km_examples/samples/train
+0: Initialized nccl process group with world size 4.
+0:  device is set as cuda:0 but was forced to cpu
+0: Saving parameter weights...
+0: thinkdeb 1
+0: thinkdeb sample_dir_path  data/rrfs_3km_examples/samples/train
+3:  device is set as cuda:3 but was forced to cpu
+3: thinkdeb 1
+3: thinkdeb sample_dir_path  data/rrfs_3km_examples/samples/train
+2:  device is set as cuda:2 but was forced to cpu
+2: thinkdeb 1
+2: thinkdeb sample_dir_path  data/rrfs_3km_examples/samples/train
+1: thinkdeb sample_name  2024050406_mbr001 2024050606_mbr000 2024050218_mbr001 2024050718_mbr000 2024050206_mbr001 2024050218_mbr002 2024050618_mbr002 2024050318_mbr001 2024050218_mbr000 2024050206_mbr000 2024050106_mbr002 2024050712_mbr001 2024050306_mbr000 2024050112_mbr001 2024050200_mbr002 2024050106_mbr001 2024050506_mbr001 2024050606_mbr001 2024050612_mbr002 2024050118_mbr001 2024050400_mbr002 2024050400_mbr001 2024050100_mbr001 2024050500_mbr000 2024050306_mbr001 2024050718_mbr001 2024050106_mbr000 2024050200_mbr001 2024050212_mbr002 2024050312_mbr002 2024050712_mbr000 2024050512_mbr001 2024050500_mbr001 2024050506_mbr000 2024050700_mbr002 2024050606_mbr002 2024050600_mbr000 2024050318_mbr002 2024050100_mbr000 2024050700_mbr000 2024050612_mbr000 2024050206_mbr002 2024050618_mbr000 2024050718_mbr002 2024050518_mbr000 2024050700_mbr001 2024050712_mbr002 2024050706_mbr000 2024050600_mbr002 2024050300_mbr002 2024050312_mbr001 2024050200_mbr000 2024050112_mbr002 2024050518_mbr001 2024050512_mbr002 2024050512_m
+1: br000 2024050100_mbr002 2024050506_mbr002 2024050618_mbr001 2024050312_mbr000 2024050406_mbr000 2024050300_mbr000 2024050406_mbr002 2024050518_mbr002 2024050612_mbr001 2024050118_mbr002 2024050112_mbr000 2024050212_mbr000 2024050300_mbr001 2024050118_mbr000 2024050706_mbr001 2024050212_mbr001 2024050318_mbr000 2024050306_mbr002 2024050706_mbr002 2024050500_mbr002 2024050600_mbr001 2024050400_mbr000
+1: thinkdeb 2
+0: thinkdeb sample_name  2024050406_mbr001 2024050606_mbr000 2024050218_mbr001 2024050718_mbr000 2024050206_mbr001 2024050218_mbr002 2024050618_mbr002 2024050318_mbr001 2024050218_mbr000 2024050206_mbr000 2024050106_mbr002 2024050712_mbr001 2024050306_mbr000 2024050112_mbr001 2024050200_mbr002 2024050106_mbr001 2024050506_mbr001 2024050606_mbr001 2024050612_mbr002 2024050118_mbr001 2024050400_mbr002 2024050400_mbr001 2024050100_mbr001 2024050500_mbr000 2024050306_mbr001 2024050718_mbr001 2024050106_mbr000 2024050200_mbr001 2024050212_mbr002 2024050312_mbr002 2024050712_mbr000 2024050512_mbr001 2024050500_mbr001 2024050506_mbr000 2024050700_mbr002 2024050606_mbr002 2024050600_mbr000 2024050318_mbr002 2024050100_mbr000 2024050700_mbr000 2024050612_mbr000 2024050206_mbr002 2024050618_mbr000 2024050718_mbr002 2024050518_mbr000 2024050700_mbr001 2024050712_mbr002 2024050706_mbr000 2024050600_mbr002 2024050300_mbr002 2024050312_mbr001 2024050200_mbr000 2024050112_mbr002 2024050518_mbr001 2024050512_mbr002 2024050512_m
+0: br000 2024050100_mbr002 2024050506_mbr002 2024050618_mbr001 2024050312_mbr000 2024050406_mbr000 2024050300_mbr000 2024050406_mbr002 2024050518_mbr002 2024050612_mbr001 2024050118_mbr002 2024050112_mbr000 2024050212_mbr000 2024050300_mbr001 2024050118_mbr000 2024050706_mbr001 2024050212_mbr001 2024050318_mbr000 2024050306_mbr002 2024050706_mbr002 2024050500_mbr002 2024050600_mbr001 2024050400_mbr000
+0: Computing mean and std.-dev. for parameters...
+0: thinkdeb 2
+2: thinkdeb sample_name  2024050406_mbr001 2024050606_mbr000 2024050218_mbr001 2024050718_mbr000 2024050206_mbr001 2024050218_mbr002 2024050618_mbr002 2024050318_mbr001 2024050218_mbr000 2024050206_mbr000 2024050106_mbr002 2024050712_mbr001 2024050306_mbr000 2024050112_mbr001 2024050200_mbr002 2024050106_mbr001 2024050506_mbr001 2024050606_mbr001 2024050612_mbr002 2024050118_mbr001 2024050400_mbr002 2024050400_mbr001 2024050100_mbr001 2024050500_mbr000 2024050306_mbr001 2024050718_mbr001 2024050106_mbr000 2024050200_mbr001 2024050212_mbr002 2024050312_mbr002 2024050712_mbr000 2024050512_mbr001 2024050500_mbr001 2024050506_mbr000 2024050700_mbr002 2024050606_mbr002 2024050600_mbr000 2024050318_mbr002 2024050100_mbr000 2024050700_mbr000 2024050612_mbr000 2024050206_mbr002 2024050618_mbr000 2024050718_mbr002 2024050518_mbr000 2024050700_mbr001 2024050712_mbr002 2024050706_mbr000 2024050600_mbr002 2024050300_mbr002 2024050312_mbr001 2024050200_mbr000 2024050112_mbr002 2024050518_mbr001 2024050512_mbr002 2024050512_m
+3: thinkdeb sample_name  2024050406_mbr001 2024050606_mbr000 2024050218_mbr001 2024050718_mbr000 2024050206_mbr001 2024050218_mbr002 2024050618_mbr002 2024050318_mbr001 2024050218_mbr000 2024050206_mbr000 2024050106_mbr002 2024050712_mbr001 2024050306_mbr000 2024050112_mbr001 2024050200_mbr002 2024050106_mbr001 2024050506_mbr001 2024050606_mbr001 2024050612_mbr002 2024050118_mbr001 2024050400_mbr002 2024050400_mbr001 2024050100_mbr001 2024050500_mbr000 2024050306_mbr001 2024050718_mbr001 2024050106_mbr000 2024050200_mbr001 2024050212_mbr002 2024050312_mbr002 2024050712_mbr000 2024050512_mbr001 2024050500_mbr001 2024050506_mbr000 2024050700_mbr002 2024050606_mbr002 2024050600_mbr000 2024050318_mbr002 2024050100_mbr000 2024050700_mbr000 2024050612_mbr000 2024050206_mbr002 2024050618_mbr000 2024050718_mbr002 2024050518_mbr000 2024050700_mbr001 2024050712_mbr002 2024050706_mbr000 2024050600_mbr002 2024050300_mbr002 2024050312_mbr001 2024050200_mbr000 2024050112_mbr002 2024050518_mbr001 2024050512_mbr002 2024050512_m
+2: br000 2024050100_mbr002 2024050506_mbr002 2024050618_mbr001 2024050312_mbr000 2024050406_mbr000 2024050300_mbr000 2024050406_mbr002 2024050518_mbr002 2024050612_mbr001 2024050118_mbr002 2024050112_mbr000 2024050212_mbr000 2024050300_mbr001 2024050118_mbr000 2024050706_mbr001 2024050212_mbr001 2024050318_mbr000 2024050306_mbr002 2024050706_mbr002 2024050500_mbr002 2024050600_mbr001 2024050400_mbr000
+2: thinkdeb 2
+3: br000 2024050100_mbr002 2024050506_mbr002 2024050618_mbr001 2024050312_mbr000 2024050406_mbr000 2024050300_mbr000 2024050406_mbr002 2024050518_mbr002 2024050612_mbr001 2024050118_mbr002 2024050112_mbr000 2024050212_mbr000 2024050300_mbr001 2024050118_mbr000 2024050706_mbr001 2024050212_mbr001 2024050318_mbr000 2024050306_mbr002 2024050706_mbr002 2024050500_mbr002 2024050600_mbr001 2024050400_mbr000
+3: thinkdeb 2
+1:   0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [02:59<11:57, 179.38s/it] 40%|████      | 2/5 [06:45<10:21, 207.11s/it] 60%|██████    | 3/5 [10:35<07:14, 217.17s/it] 80%|████████  | 4/5 [14:23<03:41, 221.43s/it]100%|██████████| 5/5 [18:15<00:00, 225.25s/it]100%|██████████| 5/5 [18:15<00:00, 219.01s/it]
+0:   0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [03:03<12:14, 183.73s/it] 40%|████      | 2/5 [06:51<10:28, 209.41s/it] 60%|██████    | 3/5 [10:45<07:21, 220.86s/it] 80%|████████  | 4/5 [14:35<03:44, 224.23s/it]100%|██████████| 5/5 [18:27<00:00, 227.04s/it]100%|██████████| 5/5 [18:27<00:00, 221.41s/it]
+2:   0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [03:10<12:43, 190.84s/it] 40%|████      | 2/5 [07:04<10:47, 215.96s/it] 60%|██████    | 3/5 [11:04<07:33, 226.82s/it] 80%|████████  | 4/5 [14:56<03:49, 229.00s/it]100%|██████████| 5/5 [18:42<00:00, 228.10s/it]100%|██████████| 5/5 [18:43<00:00, 224.61s/it]
+3:   0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [03:10<12:41, 190.28s/it] 40%|████      | 2/5 [07:00<10:41, 213.79s/it] 60%|██████    | 3/5 [11:01<07:32, 226.14s/it] 80%|████████  | 4/5 [14:58<03:50, 230.65s/it]100%|██████████| 5/5 [18:57<00:00, 233.61s/it]100%|██████████| 5/5 [18:57<00:00, 227.56s/it]
+0: Traceback (most recent call last):
+0:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/runpy.py", line 197, in _run_module_as_main
+0:     return _run_code(code, main_globals, None,
+0:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/runpy.py", line 87, in _run_code
+0:     exec(code, run_globals)
+0:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/neural_lam/create_parameter_weights_noGPU.py", line 453, in <module>
+0:     main()
+0:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/neural_lam/create_parameter_weights_noGPU.py", line 327, in main
+0:     flux_means, flux_squares = [
+0:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/neural_lam/create_parameter_weights_noGPU.py", line 328, in <listcomp>
+0:     flux_means_gathered[i] for i in original_indices
+0: IndexError: index 4 is out of bounds for dimension 0 with size 4
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050406_mbr001.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050206_mbr001.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050218_mbr000.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050306_mbr000.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: thinkdeb 3 init/target batch shape torch.Size([4, 2, 1905141, 41]) torch.Size([4, 17, 1905141, 41])
+0: thinkdeb 3 total batch shape torch.Size([4, 19, 1905141, 41])
+0: thinkdeb 4
+0: thinkdeb 5
+0: thinkdeb 7
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050506_mbr001.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050400_mbr002.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050306_mbr001.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050212_mbr002.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: thinkdeb 3 init/target batch shape torch.Size([4, 2, 1905141, 41]) torch.Size([4, 17, 1905141, 41])
+0: thinkdeb 3 total batch shape torch.Size([4, 19, 1905141, 41])
+0: thinkdeb 4
+0: thinkdeb 5
+0: thinkdeb 7
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050500_mbr001.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050600_mbr000.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050612_mbr000.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050518_mbr000.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: thinkdeb 3 init/target batch shape torch.Size([4, 2, 1905141, 41]) torch.Size([4, 17, 1905141, 41])
+0: thinkdeb 3 total batch shape torch.Size([4, 19, 1905141, 41])
+0: thinkdeb 4
+0: thinkdeb 5
+0: thinkdeb 7
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050600_mbr002.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050112_mbr002.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050100_mbr002.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050406_mbr000.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: thinkdeb 3 init/target batch shape torch.Size([4, 2, 1905141, 41]) torch.Size([4, 17, 1905141, 41])
+0: thinkdeb 3 total batch shape torch.Size([4, 19, 1905141, 41])
+0: thinkdeb 4
+0: thinkdeb 5
+0: thinkdeb 7
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050612_mbr001.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050300_mbr001.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050318_mbr000.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050600_mbr001.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([17, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([17, 1905141, 16]) dtype : torch.float32
+0: thinkdeb 3 init/target batch shape torch.Size([4, 2, 1905141, 41]) torch.Size([4, 17, 1905141, 41])
+0: thinkdeb 3 total batch shape torch.Size([4, 19, 1905141, 41])
+0: thinkdeb 4
+0: thinkdeb 5
+0: thinkdeb 7
+0: thinkdeb8 size of means/flux_means 5 5
+0: thinkxxx rank = 0 size of means len(means.shape)
+0: thinkxxx rank = 0 size of means_gathered 4
+0: thinkxxx1 rank = 0 size of flux_means 4
+0: thinkxxx1 rank = 0 size of flux_means_gathered 4
+0: thinkxxx means_gather shape before 4
+0: thinkxxx means_gather shape after 80
+0: thinkxxx0 flux_means_gather shape before 4
+0: thinkxxx0 flux_means_gather shape after 4
+0: thinkxxx original indices [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77]
+srun: error: h28n03: task 0: Exited with exit code 1
+srun: Terminating StepId=5219131.0
+srun: error: h28n04: task 1: Terminated
+srun: error: h28n06: task 3: Terminated
+srun: error: h28n05: task 2: Terminated
+srun: Force Terminated StepId=5219131.0

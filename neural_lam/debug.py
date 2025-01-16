@@ -284,13 +284,13 @@ def main():
         # (N_batch, d_features,)
         means.append(torch.mean(batch, dim=(1, 2)).cpu())
         print("thinkdeb 6") 
+
         squares.append(
             torch.mean(batch**2, dim=(1, 2)).cpu()
         )  # (N_batch, d_features,)
         flux_means.append(torch.mean(flux_batch).cpu())  # (,)
         flux_squares.append(torch.mean(flux_batch**2).cpu())  # (,)
         print("thinkdeb 7") 
-
     if distributed and world_size > 1:
         means_gathered, squares_gathered = [None] * world_size, [
             None
@@ -302,7 +302,11 @@ def main():
         dist.all_gather_object(means_gathered, torch.cat(means, dim=0))
         print(f"thinkxxx rank = {rank} size of means_gathered {len(means_gathered)}")
         dist.all_gather_object(squares_gathered, torch.cat(squares, dim=0))
+
+        print(f"thinkxxx1 rank = {rank} size of flux_means {len(flux_means_gathered)}")
         dist.all_gather_object(flux_means_gathered, flux_means)
+        print(f"thinkxxx1 rank = {rank} size of flux_means_gathered {len(flux_means_gathered)}")
+
         dist.all_gather_object(flux_squares_gathered, flux_squares)
 
         if rank == 0:
@@ -311,6 +315,8 @@ def main():
                 means_gathered, dim=0
             ), torch.cat(squares_gathered, dim=0)
             print(f"thinkxxx means_gather shape after {len(means_gathered)}")
+            print(f"thinkxxx0 flux_means_gather shape before {len(flux_means_gathered)}")
+
             flux_means_gathered, flux_squares_gathered = torch.tensor(
                 flux_means_gathered
             ), torch.tensor(flux_squares_gathered)
