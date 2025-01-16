@@ -287,10 +287,12 @@ def main():
         squares.append(
             torch.mean(batch**2, dim=(1, 2)).cpu()
         )  # (N_batch, d_features,)
-        flux_means.append(torch.mean(flux_batch).cpu())  # (,)
-        flux_squares.append(torch.mean(flux_batch**2).cpu())  # (,)
+        print(f"thinkyy batch/flux shape {batch.shape} {flux_batch.shape}") 
+        flux_means.append(torch.mean(flux_batch,dim=(1,2)).cpu())  # (,)
+        print(f"thinkyy1 mean batch/flux shape {torch.mean(batch,dim=(1,2)).shape} {torch.mean(flux_batch).shape}") 
+        flux_squares.append(torch.mean(flux_batch**2,dim=(1,2)).cpu())  # (,)
         print("thinkdeb 7") 
-    print(f"thinkdeb8 size of means/flux_means {len(means)} {len(flux_means)}") 
+    print(f"thinkdeb8 x size of means/flux_means {len(means)} {len(flux_means)}") 
     if distributed and world_size > 1:
         means_gathered, squares_gathered = [None] * world_size, [
             None
@@ -303,9 +305,11 @@ def main():
         print(f"thinkxxx rank = {rank} size of means_gathered {len(means_gathered)}")
         dist.all_gather_object(squares_gathered, torch.cat(squares, dim=0))
         print(f"thinkxxx1 rank = {rank} size of flux_means {len(flux_means_gathered)}")
-        dist.all_gather_object(flux_means_gathered, flux_means)
+#cltorg        dist.all_gather_object(flux_means_gathered, flux_means)
+        dist.all_gather_object(flux_means_gathered, torch.cat(flux_means,dim=0))
         print(f"thinkxxx1 rank = {rank} size of flux_means_gathered {len(flux_means_gathered)}")
-        dist.all_gather_object(flux_squares_gathered, flux_squares)
+#clt        dist.all_gather_object(flux_squares_gathered, flux_squares)
+        dist.all_gather_object(flux_squares_gathered, torch.cat(flux_squares,dim=0))
 
         if rank == 0:
             print(f"thinkxxx means_gather shape before {len(means_gathered)}")
@@ -314,9 +318,11 @@ def main():
             ), torch.cat(squares_gathered, dim=0)
             print(f"thinkxxx means_gather shape after {len(means_gathered)}")
             print(f"thinkxxx0 flux_means_gather shape before {len(flux_means_gathered)}")
-            flux_means_gathered, flux_squares_gathered = torch.tensor(
-                flux_means_gathered
-            ), torch.tensor(flux_squares_gathered)
+            flux_means_gathered, flux_squares_gathered = torch.cat(
+               flux_means_gathered,dim=0
+            ), torch.cat(flux_squares_gathered,dim=0)
+#ccltorg                flux_means_gathered
+#cltorg            ), torch.tensor(flux_squares_gathered)
             print(f"thinkxxx0 flux_means_gather shape after {len(flux_means_gathered)}")
 
             original_indices = ds.get_original_indices()
