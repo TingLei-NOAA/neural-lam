@@ -25,7 +25,7 @@ unset __conda_setup
 
 conda activate test-env3
 
-srun -l  -n 4 python -m neural_lam.create_parameter_weights_noGPU --data_config data_config_3km.yaml --distributed=1  >& deb.out 
+srun -l  -n 4 python -m neural_lam.debug --data_config data_config_3km.yaml --distributed=1  >& deb.out 
 
 conda deactivate
 
