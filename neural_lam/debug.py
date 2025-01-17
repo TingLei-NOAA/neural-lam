@@ -266,8 +266,8 @@ def main():
         squares.append(
             torch.mean(batch**2, dim=(1, 2)).cpu()
         )  # (N_batch, d_features,)
-        flux_means.append(torch.mean(flux_batch).cpu())  # (,)
-        flux_squares.append(torch.mean(flux_batch**2).cpu())  # (,)
+        flux_means.append(torch.mean(flux_batch,dim=(1,2)).cpu())  # (,)
+        flux_squares.append(torch.mean(flux_batch**2,dim=(1,2)).cpu())  # (,)
         print("thinkdeb 7")
 
     print(f"thinkdeb8 size of means/flux_means {len(means)} {len(flux_means)}")
@@ -279,9 +279,9 @@ def main():
         print(f"thinkxxx rank = {rank} size of means_gathered {len(means_gathered)}")
         dist.all_gather_object(squares_gathered, torch.cat(squares, dim=0))
         print(f"thinkxxx1 rank = {rank} size of flux_means {len(flux_means_gathered)}")
-        dist.all_gather_object(flux_means_gathered, flux_means)
+        dist.all_gather_object(flux_means_gathered, torch.cat(flux_means,dim=0))
         print(f"thinkxxx1 rank = {rank} size of flux_means_gathered {len(flux_means_gathered)}")
-        dist.all_gather_object(flux_squares_gathered, flux_squares)
+        dist.all_gather_object(flux_squares_gathered, torch.cat(flux_squares,dim=0))
 
         if rank == 0:
             print(f"thinkxxx means_gather shape before {len(means_gathered)}")
@@ -290,9 +290,9 @@ def main():
             ), torch.cat(squares_gathered, dim=0)
             print(f"thinkxxx means_gather shape after {len(means_gathered)}")
             print(f"thinkxxx0 flux_means_gather shape before {len(flux_means_gathered)}")
-            flux_means_gathered, flux_squares_gathered = torch.tensor(
-                flux_means_gathered
-            ), torch.tensor(flux_squares_gathered)
+            flux_means_gathered, flux_squares_gathered = torch.cat(
+                flux_means_gathered,dim=0
+            ), torch.cat(flux_squares_gathered,dim=0)
             print(f"thinkxxx0 flux_means_gather shape after {len(flux_means_gathered)}")
 
             original_indices = ds.get_original_indices()
@@ -364,33 +364,26 @@ def main():
                 device
             )
         # (N_batch, N_t', N_grid, d_features)
+        batch = torch.cat((init_batch, target_batch), dim=1)
         print("thinkdeb init_batch.shape ", init_batch.shape, " ", target_batch.shape)
         print("thinkdeb batch.shape ", torch.cat((init_batch, target_batch), dim=1).shape)
         print("thinkdeb 3 ", " ", used_subsample_len, " ", args.step_length)
         print("thinkdeb 3 ", [ss_i for ss_i in range(args.step_length)])
         # Note: batch contains only 1h-steps
         print("thinkdeb stepped_batch input shapes:")
+        print("thinkdeb stepped_batch input shapes:")
         for ss_i in range(args.step_length):
-            slice_shape = torch.cat(
-                (
-                    init_batch[:, ss_i : used_subsample_len : args.step_length],
-                    target_batch[:, ss_i : used_subsample_len : args.step_length],
-                ),
-                dim=0,
-            ).shape
-            print(f"  slice {ss_i}: {slice_shape}")
+            init_slice = init_batch[:, ss_i : used_subsample_len : args.step_length]
+            target_slice = target_batch[:, ss_i : used_subsample_len : args.step_length]
+            print(f"  slice {ss_i}:")
+            print(f"    init_slice: {init_slice.shape}")
+            print(f"    target_slice: {target_slice.shape}")
         stepped_batch = torch.cat(
             [
-                torch.cat(
-                    (
-                        init_batch[:, ss_i : used_subsample_len : args.step_length],
-                        target_batch[:, ss_i : used_subsample_len : args.step_length],
-                    ),
-                    dim=0,
-                )
+                batch[:, ss_i : used_subsample_len : args.step_length]
                 for ss_i in range(args.step_length)
-            ],
-            dim=0,
+             ],
+                    dim=0,
         )
         print("thinkdeb stepped_batch final shape:", stepped_batch.shape)
         # (N_batch', N_t, N_grid, d_features),
