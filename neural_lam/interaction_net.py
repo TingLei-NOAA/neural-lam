@@ -4,6 +4,8 @@ import torch_geometric as pyg
 from torch import nn
 import psutil
 import resource
+import os
+import gc
 
 def check_system_memory(location=""):
     """Check system and process memory usage"""
@@ -23,6 +25,47 @@ def check_system_memory(location=""):
               f"Hard: {'unlimited' if hard == -1 else f'{hard/(1024**3):.2f} GB'}")
     except Exception as e:
         print(f"Could not get process limits: {e}")
+
+def check_memory_fragmentation():
+    """Check memory fragmentation status"""
+    gc.collect()
+    
+    # Get memory maps
+    maps_file = f"/proc/{os.getpid()}/maps"
+    if os.path.exists(maps_file):
+        with open(maps_file, 'r') as f:
+            memory_maps = f.readlines()
+            
+        # Analyze contiguous regions
+        regions = []
+        for line in memory_maps:
+            if 'heap' in line or 'anon' in line:
+                addr_range = line.split()[0]
+                start, end = [int(x, 16) for x in addr_range.split('-')]
+                regions.append(end - start)
+                
+        if regions:
+            largest_block = max(regions)
+            print(f"Largest contiguous memory block: {largest_block / (1024**2):.2f} MB")
+
+def defragment_memory():
+    """Attempt to defragment memory by forcing allocation and deallocation"""
+    gc.collect()
+    
+    # Get current memory usage
+    process = psutil.Process()
+    current_mem = process.memory_info().rss
+    
+    # Allocate and immediately free a large block to consolidate memory
+    try:
+        temp = torch.empty(int(current_mem * 1.2), dtype=torch.uint8)
+        del temp
+    except:
+        pass
+    
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
 
 # Local
 from . import utils
@@ -148,12 +191,31 @@ class InteractionNet(pyg.nn.MessagePassing):
                              edge_attr.element_size() * edge_attr.nelement()) / 1024 / 1024
         print(f"Total memory for concatenation: {total_concat_memory:.2f}MB")
         
+        # Check memory fragmentation before operation
+        check_memory_fragmentation()
+        
+        # Try to defragment memory
+        defragment_memory()
+        
         try:
-            result = self.edge_mlp(torch.cat((edge_attr, x_j, x_i), dim=-1))
+            # Pre-allocate output tensor
+            concat_size = (x_i.shape[0], x_i.shape[1] * 3)
+            concat_tensor = torch.empty(concat_size, 
+                                      dtype=x_i.dtype, 
+                                      device=x_i.device, 
+                                      pin_memory=False)
+            
+            # Copy data into pre-allocated tensor
+            concat_tensor[:, :x_i.shape[1]] = edge_attr
+            concat_tensor[:, x_i.shape[1]:2*x_i.shape[1]] = x_j
+            concat_tensor[:, 2*x_i.shape[1]:] = x_i
+            
+            result = self.edge_mlp(concat_tensor)
             check_system_memory("After message concatenation")
             return result
         except Exception as e:
             check_system_memory("After message concatenation ERROR")
+            check_memory_fragmentation()  # Check fragmentation after error
             raise e
 
     # pylint: disable-next=signature-differs
