@@ -67,6 +67,53 @@ def defragment_memory():
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
 
+def cleanup_memory():
+    """Clean up memory aggressively"""
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    
+    # Try to release memory back to OS
+    if hasattr(torch.cuda, 'empty_cache'):
+        torch.cuda.empty_cache()
+
+class MemoryTracker:
+    """Track peak memory usage during operations"""
+    def __init__(self):
+        self.peak_memory = 0
+        self.current_operation = None
+        self.operation_peaks = {}
+
+    def start_operation(self, name):
+        """Start tracking memory for an operation"""
+        self.current_operation = name
+        process = psutil.Process()
+        self.operation_peaks[name] = process.memory_info().rss / (1024 * 1024)  # MB
+        print(f"\nStarting operation: {name}")
+        print(f"Initial memory: {self.operation_peaks[name]:.2f} MB")
+
+    def end_operation(self):
+        """End tracking memory for current operation"""
+        if self.current_operation:
+            process = psutil.Process()
+            current_mem = process.memory_info().rss / (1024 * 1024)  # MB
+            peak = max(current_mem, self.operation_peaks[self.current_operation])
+            self.operation_peaks[self.current_operation] = peak
+            print(f"\nEnding operation: {self.current_operation}")
+            print(f"Peak memory during operation: {peak:.2f} MB")
+            self.current_operation = None
+
+    def report(self):
+        """Report peak memory usage for all operations"""
+        print("\nMemory Usage Report:")
+        print("-" * 50)
+        for op, peak in self.operation_peaks.items():
+            print(f"{op}: {peak:.2f} MB")
+        print("-" * 50)
+
+# Create global memory tracker
+memory_tracker = MemoryTracker()
+
 # Local
 from . import utils
 
@@ -161,17 +208,26 @@ class InteractionNet(pyg.nn.MessagePassing):
         (optionally) edge_rep: (M, d_h), updated vector representations
             of edges
         """
+        memory_tracker.start_operation("forward_pass")
+        cleanup_memory()  # Clean before major operation
+        print("Starting forward pass")
+        check_system_memory("Before forward pass")
+        
         # Always concatenate to [rec_nodes, send_nodes] for propagation,
         # but only aggregate to rec_nodes
         node_reps = torch.cat((rec_rep, send_rep), dim=-2)
         edge_rep_aggr, edge_diff = self.propagate(
             self.edge_index, x=node_reps, edge_attr=edge_rep
         )
+        cleanup_memory()  # Clean after propagation
+        
         rec_diff = self.aggr_mlp(torch.cat((rec_rep, edge_rep_aggr), dim=-1))
-
+        cleanup_memory()  # Clean after aggregation
+        
         # Residual connections
         rec_rep = rec_rep + rec_diff
-
+        cleanup_memory()  # Clean after update
+        
         if self.update_edges:
             edge_rep = edge_rep + edge_diff
             return rec_rep, edge_rep
@@ -180,6 +236,7 @@ class InteractionNet(pyg.nn.MessagePassing):
 
     def message(self, x_i, x_j, edge_attr):
         """Compute messages from node j to node i."""
+        memory_tracker.start_operation("message_function")
         check_system_memory("Before message concatenation")
         print(f"x_i shape: {x_i.shape}, memory: {x_i.element_size() * x_i.nelement() / 1024 / 1024:.2f}MB")
         print(f"x_j shape: {x_j.shape}, memory: {x_j.element_size() * x_j.nelement() / 1024 / 1024:.2f}MB")
@@ -189,34 +246,54 @@ class InteractionNet(pyg.nn.MessagePassing):
                              edge_attr.element_size() * edge_attr.nelement()) / 1024 / 1024
         print(f"Total memory for concatenation: {total_concat_memory:.2f}MB")
         
-        # Check memory fragmentation before operation
-        check_memory_fragmentation()
-        
-        # Try to defragment memory
-        defragment_memory()
-        
         try:
-            # Pre-allocate output tensor with correct dimensions
-            # Keep batch dimension and node dimension, concatenate along feature dimension
+            memory_tracker.start_operation("chunk_processing")
+            # Process in chunks
             batch_size, num_nodes, feat_dim = x_i.shape
-            concat_tensor = torch.empty(
-                (batch_size, num_nodes, feat_dim * 3),
-                dtype=x_i.dtype, 
-                device=x_i.device, 
-                pin_memory=False
-            )
+            chunk_size = 1000  # Process 1000 nodes at a time
+            results = []
             
-            # Copy data into pre-allocated tensor
-            concat_tensor[:, :, :feat_dim] = edge_attr
-            concat_tensor[:, :, feat_dim:2*feat_dim] = x_j
-            concat_tensor[:, :, 2*feat_dim:] = x_i
+            print(f"Processing {num_nodes} nodes in chunks of {chunk_size}")
             
-            result = self.edge_mlp(concat_tensor)
+            for start_idx in range(0, num_nodes, chunk_size):
+                end_idx = min(start_idx + chunk_size, num_nodes)
+                print(f"Processing chunk {start_idx}-{end_idx} ({end_idx-start_idx} nodes)")
+                
+                # Process chunk
+                chunk_result = self.edge_mlp(
+                    torch.cat([
+                        edge_attr[:, start_idx:end_idx],
+                        x_j[:, start_idx:end_idx],
+                        x_i[:, start_idx:end_idx]
+                    ], dim=-1)
+                )
+                results.append(chunk_result)
+                
+                # Force cleanup every few chunks
+                if len(results) % 5 == 0:  # Increased frequency of cleanup
+                    print(f"Cleaning up memory after {len(results)} chunks")
+                    cleanup_memory()
+                    check_system_memory(f"After processing {len(results)} chunks")
+            
+            memory_tracker.end_operation()  # End chunk processing
+            
+            memory_tracker.start_operation("final_concatenation")
+            print(f"Concatenating {len(results)} chunks")
+            # Concatenate results along the node dimension
+            result = torch.cat(results, dim=1)
+            cleanup_memory()  # Clean after final concatenation
             check_system_memory("After message concatenation")
+            memory_tracker.end_operation()  # End final concatenation
+            
+            memory_tracker.end_operation()  # End message function
+            memory_tracker.report()  # Show memory usage report
             return result
+            
         except Exception as e:
             check_system_memory("After message concatenation ERROR")
-            check_memory_fragmentation()  # Check fragmentation after error
+            print(f"Error during message computation: {str(e)}")
+            memory_tracker.end_operation()  # End current operation
+            memory_tracker.report()  # Show memory usage report even on error
             raise e
 
     # pylint: disable-next=signature-differs
@@ -226,6 +303,8 @@ class InteractionNet(pyg.nn.MessagePassing):
         * return both aggregated and original messages,
         * only aggregate to number of receiver nodes.
         """
+        cleanup_memory()  # Clean before aggregation
+        
         aggr = super().aggregate(inputs, index, ptr, self.num_rec)
         return aggr, inputs
 
@@ -255,8 +334,12 @@ class SplitMLPs(nn.Module):
         Returns:
         joined_output: (..., N, d), concatenated results from the MLPs
         """
+        cleanup_memory()  # Clean before chunking
+        
         chunks = torch.split(x, self.chunk_sizes, dim=-2)
         chunk_outputs = [
             mlp(chunk_input) for mlp, chunk_input in zip(self.mlps, chunks)
         ]
+        cleanup_memory()  # Clean after chunk processing
+        
         return torch.cat(chunk_outputs, dim=-2)
