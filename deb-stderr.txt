@@ -1,21 +1,21 @@
 1: [rank: 1] Seed set to 42
+0: [rank: 0] Seed set to 42
 3: [rank: 3] Seed set to 42
 2: [rank: 2] Seed set to 42
-0: [rank: 0] Seed set to 42
 0: You have turned on `Trainer(detect_anomaly=True)`. This will significantly slow down compute speed and is recommended only for model debugging.
 0: GPU available: True (cuda), used: False
 0: TPU available: False, using: 0 TPU cores
 0: HPU available: False, using: 0 HPUs
 0: /scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/trainer/setup.py:177: GPU available but not used. You can set it by doing `Trainer(accelerator='gpu')`.
 0: /scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/loggers/wandb.py:396: There is a wandb run already in progress and newly created instances of `WandbLogger` will reuse this run. If this is not desired, call `wandb.finish()` before instantiating `WandbLogger`.
-3: [rank: 3] Seed set to 42
-2: [rank: 2] Seed set to 42
 0: [rank: 0] Seed set to 42
 1: [rank: 1] Seed set to 42
-1: Initializing distributed: GLOBAL_RANK: 1, MEMBER: 2/4
+2: [rank: 2] Seed set to 42
+3: [rank: 3] Seed set to 42
 2: Initializing distributed: GLOBAL_RANK: 2, MEMBER: 3/4
-3: Initializing distributed: GLOBAL_RANK: 3, MEMBER: 4/4
 0: Initializing distributed: GLOBAL_RANK: 0, MEMBER: 1/4
+1: Initializing distributed: GLOBAL_RANK: 1, MEMBER: 2/4
+3: Initializing distributed: GLOBAL_RANK: 3, MEMBER: 4/4
 0: ----------------------------------------------------------------------------------------------------
 0: distributed_backend=gloo
 0: All distributed processes registered. Starting with 4 processes
@@ -53,114 +53,18 @@
 0: 0         Non-trainable params
 0: 2.5 M     Total params
 0: 10.039    Total estimated model params size (MB)
-1: SLURM auto-requeueing enabled. Setting signal handlers.
 3: SLURM auto-requeueing enabled. Setting signal handlers.
 0: SLURM auto-requeueing enabled. Setting signal handlers.
+1: SLURM auto-requeueing enabled. Setting signal handlers.
 2: SLURM auto-requeueing enabled. Setting signal handlers.
 0: /scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/utilities/data.py:105: Total length of `DataLoader` across ranks is zero. Please make sure this was your intention.
-2: Traceback (most recent call last):
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/runpy.py", line 197, in _run_module_as_main
-2:     return _run_code(code, main_globals, None,
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/runpy.py", line 87, in _run_code
-2:     exec(code, run_globals)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/neural_lam/train_model_nogpu.py", line 436, in <module>
-2:     main()
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/neural_lam/train_model_nogpu.py", line 432, in main
-2:     raise e
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/neural_lam/train_model_nogpu.py", line 421, in main
-2:     trainer.fit(
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/trainer/trainer.py", line 543, in fit
-2:     call._call_and_handle_interrupt(
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/trainer/call.py", line 43, in _call_and_handle_interrupt
-2:     return trainer.strategy.launcher.launch(trainer_fn, *args, trainer=trainer, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/strategies/launchers/subprocess_script.py", line 105, in launch
-2:     return function(*args, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/trainer/trainer.py", line 579, in _fit_impl
-2:     self._run(model, ckpt_path=ckpt_path)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/trainer/trainer.py", line 986, in _run
-2:     results = self._run_stage()
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/trainer/trainer.py", line 1030, in _run_stage
-2:     self.fit_loop.run()
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/loops/fit_loop.py", line 205, in run
-2:     self.advance()
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/loops/fit_loop.py", line 363, in advance
-2:     self.epoch_loop.run(self._data_fetcher)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 140, in run
-2:     self.advance(data_fetcher)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 250, in advance
-2:     batch_output = self.automatic_optimization.run(trainer.optimizers[0], batch_idx, kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 190, in run
-2:     self._optimizer_step(batch_idx, closure)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 268, in _optimizer_step
-2:     call._call_lightning_module_hook(
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/trainer/call.py", line 159, in _call_lightning_module_hook
-2:     output = fn(*args, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/core/module.py", line 1308, in optimizer_step
-2:     optimizer.step(closure=optimizer_closure)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/core/optimizer.py", line 153, in step
-2:     step_output = self._strategy.optimizer_step(self._optimizer, closure, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/strategies/ddp.py", line 270, in optimizer_step
-2:     optimizer_output = super().optimizer_step(optimizer, closure, model, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/strategies/strategy.py", line 238, in optimizer_step
-2:     return self.precision_plugin.optimizer_step(optimizer, model=model, closure=closure, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/plugins/precision/precision.py", line 122, in optimizer_step
-2:     return optimizer.step(closure=closure, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/torch/optim/optimizer.py", line 280, in wrapper
-2:     out = func(*args, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/torch/optim/optimizer.py", line 33, in _use_grad
-2:     ret = func(self, *args, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/torch/optim/adamw.py", line 148, in step
-2:     loss = closure()
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/plugins/precision/precision.py", line 108, in _wrap_closure
-2:     closure_result = closure()
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 144, in __call__
-2:     self._result = self.closure(*args, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/torch/utils/_contextlib.py", line 115, in decorate_context
-2:     return func(*args, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 129, in closure
-2:     step_output = self._step_fn()
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 317, in _training_step
-2:     training_step_output = call._call_strategy_hook(trainer, "training_step", *kwargs.values())
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/trainer/call.py", line 311, in _call_strategy_hook
-2:     output = fn(*args, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/strategies/strategy.py", line 389, in training_step
-2:     return self._forward_redirection(self.model, self.lightning_module, "training_step", *args, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/strategies/strategy.py", line 640, in __call__
-2:     wrapper_output = wrapper_module(*args, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1501, in _call_impl
-2:     return forward_call(*args, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/torch/nn/parallel/distributed.py", line 1156, in forward
-2:     output = self._run_ddp_forward(*inputs, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/torch/nn/parallel/distributed.py", line 1113, in _run_ddp_forward
-2:     return module_to_run(*inputs, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1501, in _call_impl
-2:     return forward_call(*args, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/pytorch_lightning/strategies/strategy.py", line 633, in wrapped_forward
-2:     out = method(*_args, **_kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/neural_lam/models/ar_model.py", line 211, in training_step
-2:     prediction, target, pred_std = self.common_step(batch)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/neural_lam/models/ar_model.py", line 199, in common_step
-2:     prediction, pred_std = self.unroll_prediction(
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/neural_lam/models/ar_model.py", line 152, in unroll_prediction
-2:     pred_state, pred_std = self.predict_step(
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/neural_lam/models/base_graph_model.py", line 147, in predict_step
-2:     grid_rep = self.m2g_gnn(
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1501, in _call_impl
-2:     return forward_call(*args, **kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/neural_lam/interaction_net.py", line 124, in forward
-2:     edge_rep_aggr, edge_diff = self.propagate(
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-conda-envs/test-env3/lib/python3.9/site-packages/torch_geometric/nn/conv/message_passing.py", line 467, in propagate
-2:     out = self.message(**msg_kwargs)
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/neural_lam/interaction_net.py", line 157, in message
-2:     raise e
-2:   File "/scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/neural_lam/interaction_net.py", line 152, in message
-2:     result = self.edge_mlp(torch.cat((edge_attr, x_j, x_i), dim=-1))
-2: RuntimeError: [enforce fail at alloc_cpu.cpp:75] err == 0. DefaultCPUAllocator: can't allocate memory: you tried to allocate 11705186304 bytes. Error code 12 (Cannot allocate memory)
-0: slurmstepd: error: Detected 1 oom_kill event in StepId=5438521.0. Some of the step tasks have been OOM Killed.
-srun: error: h28n01: task 1: Out Of Memory
-srun: Terminating StepId=5438521.0
-0: slurmstepd: error: *** STEP 5438521.0 ON h28n01 CANCELLED AT 2025-01-21T13:54:39 ***
+0: slurmstepd: error: Detected 1 oom_kill event in StepId=5451674.0. Some of the step tasks have been OOM Killed.
+srun: error: h26n10: task 3: Out Of Memory
+srun: Terminating StepId=5451674.0
+0: slurmstepd: error: *** STEP 5451674.0 ON h26n10 CANCELLED AT 2025-01-21T18:54:51 ***
+2: [rank: 2] Received SIGTERM: 15
+2: Bypassing SIGTERM: 15
 0: [rank: 0] Received SIGTERM: 15
 0: Bypassing SIGTERM: 15
-3: [rank: 3] Received SIGTERM: 15
-3: Bypassing SIGTERM: 15
+1: [rank: 1] Received SIGTERM: 15
+1: Bypassing SIGTERM: 15
