@@ -179,9 +179,7 @@ class InteractionNet(pyg.nn.MessagePassing):
         return rec_rep
 
     def message(self, x_i, x_j, edge_attr):
-        """
-        Compute messages from node j to node i.
-        """
+        """Compute messages from node j to node i."""
         check_system_memory("Before message concatenation")
         print(f"x_i shape: {x_i.shape}, memory: {x_i.element_size() * x_i.nelement() / 1024 / 1024:.2f}MB")
         print(f"x_j shape: {x_j.shape}, memory: {x_j.element_size() * x_j.nelement() / 1024 / 1024:.2f}MB")
@@ -198,17 +196,20 @@ class InteractionNet(pyg.nn.MessagePassing):
         defragment_memory()
         
         try:
-            # Pre-allocate output tensor
-            concat_size = (x_i.shape[0], x_i.shape[1] * 3)
-            concat_tensor = torch.empty(concat_size, 
-                                      dtype=x_i.dtype, 
-                                      device=x_i.device, 
-                                      pin_memory=False)
+            # Pre-allocate output tensor with correct dimensions
+            # Keep batch dimension and node dimension, concatenate along feature dimension
+            batch_size, num_nodes, feat_dim = x_i.shape
+            concat_tensor = torch.empty(
+                (batch_size, num_nodes, feat_dim * 3),
+                dtype=x_i.dtype, 
+                device=x_i.device, 
+                pin_memory=False
+            )
             
             # Copy data into pre-allocated tensor
-            concat_tensor[:, :x_i.shape[1]] = edge_attr
-            concat_tensor[:, x_i.shape[1]:2*x_i.shape[1]] = x_j
-            concat_tensor[:, 2*x_i.shape[1]:] = x_i
+            concat_tensor[:, :, :feat_dim] = edge_attr
+            concat_tensor[:, :, feat_dim:2*feat_dim] = x_j
+            concat_tensor[:, :, 2*feat_dim:] = x_i
             
             result = self.edge_mlp(concat_tensor)
             check_system_memory("After message concatenation")
