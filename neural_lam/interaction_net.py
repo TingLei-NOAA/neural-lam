@@ -241,6 +241,11 @@ class InteractionNet(pyg.nn.MessagePassing):
 
     def message(self, x_i, x_j, edge_attr):
         """Compute messages from node j to node i."""
+        # Ensure inputs are on CPU
+        x_i = x_i.cpu()
+        x_j = x_j.cpu()
+        edge_attr = edge_attr.cpu()
+        
         memory_tracker.start_operation("message_function")
         check_system_memory("Before message concatenation")
         print(f"x_i shape: {x_i.shape}, memory: {x_i.element_size() * x_i.nelement() / 1024 / 1024:.2f}MB")
@@ -270,15 +275,10 @@ class InteractionNet(pyg.nn.MessagePassing):
                         edge_attr[:, start_idx:end_idx],
                         x_j[:, start_idx:end_idx],
                         x_i[:, start_idx:end_idx]
-                    ], dim=-1)
+                    ], dim=-1).cpu()  # Ensure on CPU
                 
                 # Process chunk
-                chunk_result = self.edge_mlp(chunk_input)
-                
-                # Move result to CPU if needed to save GPU memory
-                if torch.cuda.is_available() and chunk_result.device.type == 'cuda':
-                    chunk_result = chunk_result.cpu()
-                
+                chunk_result = self.edge_mlp(chunk_input).cpu()  # Ensure on CPU
                 results.append(chunk_result)
                 
                 # Force cleanup every chunk
@@ -288,7 +288,7 @@ class InteractionNet(pyg.nn.MessagePassing):
                 del chunk_input
                 if len(results) > 1:
                     # Keep only the concatenated results
-                    results = [torch.cat(results, dim=1)]
+                    results = [torch.cat(results, dim=1).cpu()]  # Ensure on CPU
                 
                 if len(results) % 2 == 0:  # More frequent cleanup
                     print(f"Cleaning up memory after {len(results)} chunks")
@@ -298,12 +298,9 @@ class InteractionNet(pyg.nn.MessagePassing):
             
             memory_tracker.start_operation("final_concatenation")
             print(f"Concatenating final results")
-            # Move results back to GPU if needed
-            if torch.cuda.is_available():
-                results = [r.cuda() for r in results]
             
             # Final concatenation
-            result = torch.cat(results, dim=1)
+            result = torch.cat(results, dim=1).cpu()  # Ensure on CPU
             cleanup_memory()
             check_system_memory("After final concatenation")
             memory_tracker.end_operation()
@@ -326,6 +323,11 @@ class InteractionNet(pyg.nn.MessagePassing):
         * return both aggregated and original messages,
         * only aggregate to number of receiver nodes.
         """
+        # Ensure inputs are on CPU
+        inputs = inputs.cpu()
+        index = index.cpu() if index is not None else None
+        ptr = ptr.cpu() if ptr is not None else None
+        
         cleanup_memory()  # Clean before aggregation
         
         aggr = super().aggregate(inputs, index, ptr, self.num_rec)
@@ -357,6 +359,9 @@ class SplitMLPs(nn.Module):
         Returns:
         joined_output: (..., N, d), concatenated results from the MLPs
         """
+        # Ensure inputs are on CPU
+        x = x.cpu()
+        
         cleanup_memory()  # Clean before chunking
         
         chunks = torch.split(x, self.chunk_sizes, dim=-2)
