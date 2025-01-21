@@ -4,6 +4,8 @@ import random
 import time
 from argparse import ArgumentParser
 import os
+import psutil
+import resource
 
 # Third-party
 import pytorch_lightning as pl
@@ -13,11 +15,34 @@ from lightning_fabric.utilities import seed
 # Local
 from . import WeatherDataset, config, utils
 from .models import GraphLAM, HiLAM, HiLAMParallel
+
+
 def print_memory_usage(prefix=""):
     import psutil
     import os
     process = psutil.Process(os.getpid())
     print(f"{prefix} Memory usage: {process.memory_info().rss / 1024 / 1024:.2f} MB")
+
+
+def check_system_memory(location=""):
+    """Check system and process memory usage"""
+    mem = psutil.virtual_memory()
+    print(f"\nMemory Check at {location}:")
+    print(f"Total system memory: {mem.total / (1024**3):.2f} GB")
+    print(f"Available memory: {mem.available / (1024**3):.2f} GB")
+    print(f"Used memory: {mem.used / (1024**3):.2f} GB")
+    
+    # Get process memory info
+    process = psutil.Process()
+    print(f"Process memory usage: {process.memory_info().rss / (1024**3):.2f} GB")
+    
+    try:
+        soft, hard = resource.getrlimit(resource.RLIMIT_AS)
+        print(f"Process memory limits - Soft: {'unlimited' if soft == -1 else f'{soft/(1024**3):.2f} GB'}, "
+              f"Hard: {'unlimited' if hard == -1 else f'{hard/(1024**3):.2f} GB'}")
+    except Exception as e:
+        print(f"Could not get process limits: {e}")
+
 
 torch.set_default_dtype(torch.float32) #added by clt
 MODELS = {
@@ -386,18 +411,25 @@ def main(input_args=None):
 #clt        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         device = torch.device('cpu') #thinkdeb555
         print(f'thinkdebUsing device: {device}')
+        check_system_memory("Before model to device")
         model.to(device)
         model = model.float() #added by Ting to avoid errors of different types in model.
+        check_system_memory("After model to device")
         print_memory_usage("thinkdeb0 fit")
-        trainer.fit(
-            model=model,
-            train_dataloaders=train_loader,
-            val_dataloaders=val_loader,
-            ckpt_path=args.load,
-        )
-        completed_epochs = trainer.current_epoch
-        print(f"Training completed after {completed_epochs} epochs.")
-
+        
+        try:
+            trainer.fit(
+                model=model,
+                train_dataloaders=train_loader,
+                val_dataloaders=val_loader,
+                ckpt_path=args.load,
+            )
+            check_system_memory("After training completed")
+            completed_epochs = trainer.current_epoch
+            print(f"Training completed after {completed_epochs} epochs.")
+        except Exception as e:
+            check_system_memory("Training ERROR")
+            raise e
 
 
 if __name__ == "__main__":

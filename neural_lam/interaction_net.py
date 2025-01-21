@@ -2,6 +2,27 @@
 import torch
 import torch_geometric as pyg
 from torch import nn
+import psutil
+import resource
+
+def check_system_memory(location=""):
+    """Check system and process memory usage"""
+    mem = psutil.virtual_memory()
+    print(f"\nMemory Check at {location}:")
+    print(f"Total system memory: {mem.total / (1024**3):.2f} GB")
+    print(f"Available memory: {mem.available / (1024**3):.2f} GB")
+    print(f"Used memory: {mem.used / (1024**3):.2f} GB")
+    
+    # Get process memory info
+    process = psutil.Process()
+    print(f"Process memory usage: {process.memory_info().rss / (1024**3):.2f} GB")
+    
+    try:
+        soft, hard = resource.getrlimit(resource.RLIMIT_AS)
+        print(f"Process memory limits - Soft: {'unlimited' if soft == -1 else f'{soft/(1024**3):.2f} GB'}, "
+              f"Hard: {'unlimited' if hard == -1 else f'{hard/(1024**3):.2f} GB'}")
+    except Exception as e:
+        print(f"Could not get process limits: {e}")
 
 # Local
 from . import utils
@@ -114,11 +135,26 @@ class InteractionNet(pyg.nn.MessagePassing):
 
         return rec_rep
 
-    def message(self, x_j, x_i, edge_attr):
+    def message(self, x_i, x_j, edge_attr):
         """
         Compute messages from node j to node i.
         """
-        return self.edge_mlp(torch.cat((edge_attr, x_j, x_i), dim=-1))
+        check_system_memory("Before message concatenation")
+        print(f"x_i shape: {x_i.shape}, memory: {x_i.element_size() * x_i.nelement() / 1024 / 1024:.2f}MB")
+        print(f"x_j shape: {x_j.shape}, memory: {x_j.element_size() * x_j.nelement() / 1024 / 1024:.2f}MB")
+        print(f"edge_attr shape: {edge_attr.shape}, memory: {edge_attr.element_size() * edge_attr.nelement() / 1024 / 1024:.2f}MB")
+        total_concat_memory = (x_i.element_size() * x_i.nelement() + 
+                             x_j.element_size() * x_j.nelement() + 
+                             edge_attr.element_size() * edge_attr.nelement()) / 1024 / 1024
+        print(f"Total memory for concatenation: {total_concat_memory:.2f}MB")
+        
+        try:
+            result = self.edge_mlp(torch.cat((edge_attr, x_j, x_i), dim=-1))
+            check_system_memory("After message concatenation")
+            return result
+        except Exception as e:
+            check_system_memory("After message concatenation ERROR")
+            raise e
 
     # pylint: disable-next=signature-differs
     def aggregate(self, inputs, index, ptr, dim_size):

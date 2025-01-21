@@ -316,6 +316,8 @@ def main(input_args=None):
         callbacks=[checkpoint_callback],
         check_val_every_n_epoch=args.val_interval,
         precision=args.precision,
+        profiler="advanced",  # This will give detailed profiling information
+        log_every_n_steps=1   # This will give more frequent updates
     )
 
     # Only init once, on rank 0 only
