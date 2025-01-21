@@ -4,6 +4,8 @@ import random
 import time
 from argparse import ArgumentParser
 import os
+import gc
+import psutil
 
 # Third-party
 import pytorch_lightning as pl
@@ -259,19 +261,20 @@ def main(input_args=None):
         num_workers=args.n_workers,
     )
 
-    # Instantiate model + trainer
-    if torch.cuda.is_available() : 
-        device_name = "cuda"
-        torch.set_float32_matmul_precision(
-            "high"
-        )  # Allows using Tensor Cores on A100s
-    else:
-        device_name = "cpu"
-
-#cltdebug    device_name = "cpu" #cltthinkdeb 
+    # Force CPU usage for better memory management
+    device_name = "cpu"
+    
+    # Configure CPU memory optimizations
+    torch.set_num_threads(4)  # Limit number of threads to prevent memory explosion
+    torch.set_num_interop_threads(4)  # Limit inter-op parallelism
+    
     # Load model parameters Use new args for model
     model_class = MODELS[args.model]
     model = model_class(args)
+
+    # Set up gradient checkpointing to save memory
+    if hasattr(model, 'enable_gradient_checkpointing'):
+        model.enable_gradient_checkpointing()
 
     prefix = "subset-" if args.subset_ds else ""
     if args.eval:
@@ -288,6 +291,22 @@ def main(input_args=None):
         mode="min",
         save_last=True,
     )
+
+    # Add memory monitoring callback
+    class MemoryMonitorCallback(pl.Callback):
+        def __init__(self):
+            import psutil
+            self.process = psutil.Process()
+        
+        def on_train_batch_start(self, trainer, pl_module, batch, batch_idx):
+            memory_info = self.process.memory_info()
+            print(f"\nMemory usage before batch {batch_idx}:")
+            print(f"RSS: {memory_info.rss / 1024 / 1024:.2f} MB")
+            print(f"VMS: {memory_info.vms / 1024 / 1024:.2f} MB")
+        
+        def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx):
+            gc.collect()  # Force garbage collection
+
     logger = pl.loggers.WandbLogger(
         project=args.wandb_project, name=run_name, config=args
     )
@@ -304,20 +323,22 @@ def main(input_args=None):
     ntasks_per_node = int(os.getenv("SLURM_NTASKS_PER_NODE", 1))
     num_nodes = int(os.getenv("SLURM_NNODES", 1))  # Defaults to 1 if not set by SLURM
 
+    # Configure training strategy
     trainer = pl.Trainer(
         max_epochs=args.epochs,
         deterministic=True,
-        strategy="auto", #        strategy="ddp",
+        strategy="ddp",  # Use DDP for distributed training on CPU
         accelerator=device_name,
         devices=ntasks_per_node,
         num_nodes=num_nodes,
         logger=logger,
-        log_every_n_steps=1,
-        callbacks=[checkpoint_callback],
+        callbacks=[checkpoint_callback, MemoryMonitorCallback()],
         check_val_every_n_epoch=args.val_interval,
         precision=args.precision,
         profiler="advanced",  # This will give detailed profiling information
-        log_every_n_steps=1   # This will give more frequent updates
+        log_every_n_steps=1,   # This will give more frequent updates
+        accumulate_grad_batches=2,  # Accumulate gradients to save memory
+        gradient_clip_val=1.0,  # Add gradient clipping
     )
 
     # Only init once, on rank 0 only
@@ -361,7 +382,7 @@ def main(input_args=None):
 #                        #print(f"val Element {i}: Shape: {element.shape}, Dtype: {element.dtype}")
 #                    else:
 #                        print(f"val Element {i}: Content: {element}")
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') #clt
+        device = torch.device('cpu')
         print(f'thinkdebUsing device: {device}')
         model.to(device)                                                      #clt
         model=model.float() #added by Ting to avoid errors of different types in model.
@@ -369,11 +390,15 @@ def main(input_args=None):
         print("thinkdeb after trainer.test")
     else:
         # Train model
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        device = torch.device('cpu') #thinkdeb555
-        print(f'thinkdebUsing device: {device}')
-        model.to(device)
+        device = torch.device('cpu')
+        print(f'Using device: {device}')
+        model = model.to(device)
         model = model.float() #added by Ting to avoid errors of different types in model.
+        
+        # Configure DataLoader for CPU
+        train_loader.pin_memory = False  # Disable pin_memory since we're using CPU
+        val_loader.pin_memory = False
+        
         trainer.fit(
             model=model,
             train_dataloaders=train_loader,
@@ -382,8 +407,6 @@ def main(input_args=None):
         )
         completed_epochs = trainer.current_epoch
         print(f"Training completed after {completed_epochs} epochs.")
-
-
 
 if __name__ == "__main__":
     main()

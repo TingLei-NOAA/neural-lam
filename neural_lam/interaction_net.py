@@ -69,9 +69,14 @@ def defragment_memory():
 
 def cleanup_memory():
     """Clean up memory aggressively"""
+    # Force garbage collection
     gc.collect()
+    
+    # Clear CUDA cache if available
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
+        # Synchronize CUDA to ensure memory is freed
+        torch.cuda.synchronize()
     
     # Try to release memory back to OS
     if hasattr(torch.cuda, 'empty_cache'):
@@ -248,9 +253,9 @@ class InteractionNet(pyg.nn.MessagePassing):
         
         try:
             memory_tracker.start_operation("chunk_processing")
-            # Process in chunks
+            # Process in smaller chunks
             batch_size, num_nodes, feat_dim = x_i.shape
-            chunk_size = 1000  # Process 1000 nodes at a time
+            chunk_size = 500  # Reduced chunk size for lower memory usage
             results = []
             
             print(f"Processing {num_nodes} nodes in chunks of {chunk_size}")
@@ -259,41 +264,59 @@ class InteractionNet(pyg.nn.MessagePassing):
                 end_idx = min(start_idx + chunk_size, num_nodes)
                 print(f"Processing chunk {start_idx}-{end_idx} ({end_idx-start_idx} nodes)")
                 
-                # Process chunk
-                chunk_result = self.edge_mlp(
-                    torch.cat([
+                # Process chunk with explicit memory management
+                with torch.no_grad():  # Disable gradients for concatenation
+                    chunk_input = torch.cat([
                         edge_attr[:, start_idx:end_idx],
                         x_j[:, start_idx:end_idx],
                         x_i[:, start_idx:end_idx]
                     ], dim=-1)
-                )
+                
+                # Process chunk
+                chunk_result = self.edge_mlp(chunk_input)
+                
+                # Move result to CPU if needed to save GPU memory
+                if torch.cuda.is_available() and chunk_result.device.type == 'cuda':
+                    chunk_result = chunk_result.cpu()
+                
                 results.append(chunk_result)
                 
-                # Force cleanup every few chunks
-                if len(results) % 5 == 0:  # Increased frequency of cleanup
+                # Force cleanup every chunk
+                cleanup_memory()
+                
+                # Clean up intermediate tensors
+                del chunk_input
+                if len(results) > 1:
+                    # Keep only the concatenated results
+                    results = [torch.cat(results, dim=1)]
+                
+                if len(results) % 2 == 0:  # More frequent cleanup
                     print(f"Cleaning up memory after {len(results)} chunks")
-                    cleanup_memory()
                     check_system_memory(f"After processing {len(results)} chunks")
             
             memory_tracker.end_operation()  # End chunk processing
             
             memory_tracker.start_operation("final_concatenation")
-            print(f"Concatenating {len(results)} chunks")
-            # Concatenate results along the node dimension
+            print(f"Concatenating final results")
+            # Move results back to GPU if needed
+            if torch.cuda.is_available():
+                results = [r.cuda() for r in results]
+            
+            # Final concatenation
             result = torch.cat(results, dim=1)
-            cleanup_memory()  # Clean after final concatenation
-            check_system_memory("After message concatenation")
-            memory_tracker.end_operation()  # End final concatenation
+            cleanup_memory()
+            check_system_memory("After final concatenation")
+            memory_tracker.end_operation()
             
             memory_tracker.end_operation()  # End message function
-            memory_tracker.report()  # Show memory usage report
+            memory_tracker.report()
             return result
             
         except Exception as e:
             check_system_memory("After message concatenation ERROR")
             print(f"Error during message computation: {str(e)}")
-            memory_tracker.end_operation()  # End current operation
-            memory_tracker.report()  # Show memory usage report even on error
+            memory_tracker.end_operation()
+            memory_tracker.report()
             raise e
 
     # pylint: disable-next=signature-differs
