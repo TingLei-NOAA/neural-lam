@@ -239,67 +239,71 @@ class InteractionNet(pyg.nn.MessagePassing):
     # Disable to override args/kwargs from superclass
 
     def __init__(
-        self,
-        edge_index,
-        input_dim,
-        update_edges=True,
-        hidden_layers=1,
-        hidden_dim=None,
-        edge_chunk_sizes=None,
-        aggr_chunk_sizes=None,
-        aggr="sum",
-    ):
-        """
-        Create a new InteractionNet
+            self,
+            edge_index,
+            input_dim,
+            update_edges=True,
+            hidden_layers=1,
+            hidden_dim=None,
+            edge_chunk_sizes=None,
+            aggr_chunk_sizes=None,
+            aggr="sum",
+        ):
+            """
+            Create a new InteractionNet
 
-        edge_index: (2,M), Edges in pyg format
-        input_dim: Dimensionality of input representations,
-            for both nodes and edges
-        update_edges: If new edge representations should be computed
-            and returned
-        hidden_layers: Number of hidden layers in MLPs
-        hidden_dim: Dimensionality of hidden layers, if None then same
-            as input_dim
-        edge_chunk_sizes: List of chunks sizes to split edge representation
-            into and use separate MLPs for (None = no chunking, same MLP)
-        aggr_chunk_sizes: List of chunks sizes to split aggregated node
-            representation into and use separate MLPs for
-            (None = no chunking, same MLP)
-        aggr: Message aggregation method (sum/mean)
-        """
-        assert aggr in ("sum", "mean"), f"Unknown aggregation method: {aggr}"
-        super().__init__(aggr=aggr)
+            edge_index: (2,M), Edges in pyg format
+            input_dim: Dimensionality of input representations,
+                for both nodes and edges
+            update_edges: If new edge representations should be computed
+                and returned
+            hidden_layers: Number of hidden layers in MLPs
+            hidden_dim: Dimensionality of hidden layers, if None then same
+                as input_dim
+            edge_chunk_sizes: List of chunks sizes to split edge representation
+                into and use separate MLPs for (None = no chunking, same MLP)
+            aggr_chunk_sizes: List of chunks sizes to split aggregated node
+                representation into and use separate MLPs for
+                (None = no chunking, same MLP)
+            aggr: Message aggregation method (sum/mean)
+            """
+            assert aggr in ("sum", "mean"), f"Unknown aggregation method: {aggr}"
+            super().__init__(aggr=aggr)
 
-        if hidden_dim is None:
-            # Default to input dim if not explicitly given
-            hidden_dim = input_dim
+            if hidden_dim is None:
+                # Default to input dim if not explicitly given
+                hidden_dim = input_dim
 
-        # Store edge indices without modifying them
-        self.register_buffer("edge_index", edge_index.clone(), persistent=False)
-        # Store number of nodes according to edge_index
-        self.num_nodes = edge_index.max().item() + 1
+            # Make both sender and receiver indices of edge_index start at 0
+            edge_index = edge_index - edge_index.min(dim=1, keepdim=True)[0]
+            # Store number of receiver nodes according to edge_index
+            self.num_rec = edge_index[1].max() + 1
+            edge_index[0] = (
+                edge_index[0] + self.num_rec
+            )  # Make sender indices after rec
+            self.register_buffer("edge_index", edge_index, persistent=False)
 
-        # Create MLPs
-        edge_mlp_recipe = [3 * input_dim] + [hidden_dim] * (hidden_layers + 1)
-        aggr_mlp_recipe = [2 * input_dim] + [hidden_dim] * (hidden_layers + 1)
+            # Create MLPs
+            edge_mlp_recipe = [3 * input_dim] + [hidden_dim] * (hidden_layers + 1)
+            aggr_mlp_recipe = [2 * input_dim] + [hidden_dim] * (hidden_layers + 1)
 
-        if edge_chunk_sizes is None:
-            self.edge_mlp = utils.make_mlp(edge_mlp_recipe)
-        else:
-            self.edge_mlp = SplitMLPs(
-                [utils.make_mlp(edge_mlp_recipe) for _ in edge_chunk_sizes],
-                edge_chunk_sizes,
-            )
+            if edge_chunk_sizes is None:
+                self.edge_mlp = utils.make_mlp(edge_mlp_recipe)
+            else:
+                self.edge_mlp = SplitMLPs(
+                    [utils.make_mlp(edge_mlp_recipe) for _ in edge_chunk_sizes],
+                    edge_chunk_sizes,
+                )
 
-        if aggr_chunk_sizes is None:
-            self.aggr_mlp = utils.make_mlp(aggr_mlp_recipe)
-        else:
-            self.aggr_mlp = SplitMLPs(
-                [utils.make_mlp(aggr_mlp_recipe) for _ in aggr_chunk_sizes],
-                aggr_chunk_sizes,
-            )
+            if aggr_chunk_sizes is None:
+                self.aggr_mlp = utils.make_mlp(aggr_mlp_recipe)
+            else:
+                self.aggr_mlp = SplitMLPs(
+                    [utils.make_mlp(aggr_mlp_recipe) for _ in aggr_chunk_sizes],
+                    aggr_chunk_sizes,
+                )
 
-        self.update_edges = update_edges
+            self.update_edges = update_edges
 
     def forward(self, send_rep, rec_rep, edge_rep):
         memory_tracker.start_operation("forward_pass")
@@ -417,50 +421,18 @@ class InteractionNet(pyg.nn.MessagePassing):
 
     def message(self, x_i, x_j, edge_attr):
         """Compute messages from node j to node i."""
-        # Ensure inputs are on CPU
-        x_i = x_i.cpu()
-        x_j = x_j.cpu()
-        edge_attr = edge_attr.cpu()
-        
-        # Process messages in chunks
-        chunk_size = 500
-        num_edges = x_i.size(0)
-        message_chunks = []
-        
-        for i in range(0, num_edges, chunk_size):
-            chunk_end = min(i + chunk_size, num_edges)
-            
-            # Process chunk
-            chunk_x_i = x_i[i:chunk_end].cpu()
-            chunk_x_j = x_j[i:chunk_end].cpu()
-            chunk_edge_attr = edge_attr[i:chunk_end].cpu()
-            
-            # Compute messages for chunk
-            chunk_msg = self.edge_mlp(torch.cat((chunk_edge_attr, chunk_x_i, chunk_x_j), dim=-1))
-            message_chunks.append(chunk_msg)
-            
-            # Clean up
-            del chunk_x_i, chunk_x_j, chunk_edge_attr, chunk_msg
-            torch.cuda.empty_cache() if torch.cuda.is_available() else gc.collect()
-        
-        # Combine results
-        return torch.cat(message_chunks, dim=0)
+        return edge_attr
 
-    # pylint: disable-next=signature-differs
     def aggregate(self, inputs, index, ptr, dim_size):
         """
         Overridden aggregation function to:
         * return both aggregated and original messages,
         * only aggregate to number of receiver nodes.
         """
-        # Ensure inputs are on CPU
-        inputs = inputs.cpu()
-        index = index.cpu() if index is not None else None
-        ptr = ptr.cpu() if ptr is not None else None
         
         cleanup_memory()  # Clean before aggregation
         
-        aggr = super().aggregate(inputs, index, ptr, self.num_nodes)
+        aggr = super().aggregate(inputs, index, ptr, self.num_rec)
         return aggr, inputs
 
 
