@@ -362,7 +362,7 @@ class InteractionNet(pyg.nn.MessagePassing):
             raise e
 
     def _forward_chunk(self, send_rep, rec_rep, edge_index, edge_rep):
-        """Process a single chunk of nodes"""
+        """Process a single chunk of nodes with memory-efficient operations"""
         memory_tracker.start_operation("forward_chunk")
         
         try:
@@ -372,28 +372,94 @@ class InteractionNet(pyg.nn.MessagePassing):
             memory_tracker.log_tensor("chunk_edge_index", edge_index)
             memory_tracker.log_tensor("chunk_edge_rep", edge_rep)
             
-            # Compute edge features
-            memory_tracker.start_operation("compute_edge_features")
-            edge_features = self.edge_mlp(torch.cat((edge_rep, send_rep, rec_rep), dim=-1))
-            memory_tracker.log_tensor("edge_features", edge_features)
+            # Process in smaller sub-chunks
+            sub_chunk_size = 50000  # Adjust based on available memory
+            num_edges = edge_index.size(1)
+            edge_features_list = []
+            
+            for start_idx in range(0, num_edges, sub_chunk_size):
+                memory_tracker.start_operation(f"sub_chunk_{start_idx}")
+                
+                end_idx = min(start_idx + sub_chunk_size, num_edges)
+                sub_edge_index = edge_index[:, start_idx:end_idx]
+                
+                # Get corresponding nodes for this sub-chunk
+                sub_send_nodes = sub_edge_index[0]
+                sub_rec_nodes = sub_edge_index[1]
+                
+                # Extract features only for nodes in this sub-chunk
+                sub_send_rep = send_rep[sub_send_nodes]
+                sub_rec_rep = rec_rep[sub_rec_nodes]
+                
+                # Handle edge representation
+                if edge_rep.dim() > 1:
+                    sub_edge_rep = edge_rep[start_idx:end_idx]
+                else:
+                    sub_edge_rep = edge_rep
+                
+                # Compute features for sub-chunk
+                with torch.no_grad():  # Temporarily disable grad to save memory
+                    sub_input = torch.cat((sub_edge_rep, sub_send_rep, sub_rec_rep), dim=-1)
+                    sub_features = self.edge_mlp(sub_input)
+                    edge_features_list.append(sub_features)
+                
+                # Clean up
+                del sub_input, sub_features, sub_send_rep, sub_rec_rep, sub_edge_rep
+                gc.collect()
+                memory_tracker.end_operation()
+            
+            # Combine features
+            memory_tracker.start_operation("combine_features")
+            edge_features = torch.cat(edge_features_list, dim=0)
+            del edge_features_list
+            gc.collect()
             memory_tracker.end_operation()
             
-            # Aggregate messages
+            # Aggregate messages in chunks
             memory_tracker.start_operation("aggregate_messages")
-            aggr_messages = self.aggregate(edge_features, edge_index[1], dim=0)
-            memory_tracker.log_tensor("aggr_messages", aggr_messages)
+            unique_receivers = torch.unique(edge_index[1])
+            num_receivers = len(unique_receivers)
+            aggr_chunk_size = 10000  # Adjust based on available memory
+            aggr_messages_list = []
+            
+            for start_idx in range(0, num_receivers, aggr_chunk_size):
+                end_idx = min(start_idx + aggr_chunk_size, num_receivers)
+                receiver_subset = unique_receivers[start_idx:end_idx]
+                
+                # Get messages for these receivers
+                receiver_mask = torch.isin(edge_index[1], receiver_subset)
+                subset_features = edge_features[receiver_mask]
+                subset_edge_index = edge_index[:, receiver_mask]
+                
+                # Aggregate
+                subset_messages = self.aggregate(subset_features, subset_edge_index[1], dim=0)
+                aggr_messages_list.append(subset_messages)
+                
+                # Clean up
+                del subset_features, subset_edge_index, receiver_mask
+                gc.collect()
+            
+            # Combine aggregated messages
+            aggr_messages = torch.cat(aggr_messages_list, dim=0)
+            del aggr_messages_list
+            gc.collect()
             memory_tracker.end_operation()
             
-            # Update node features
-            memory_tracker.start_operation("update_nodes")
+            # Final node update
+            memory_tracker.start_operation("node_update")
             out = self.aggr_mlp(torch.cat((rec_rep, aggr_messages), dim=-1))
-            memory_tracker.log_tensor("output", out)
             memory_tracker.end_operation()
             
             memory_tracker.end_operation()
             return out
             
         except Exception as e:
+            print(f"Error in _forward_chunk: {str(e)}")
+            print(f"Tensor shapes:")
+            print(f"send_rep: {send_rep.shape}")
+            print(f"rec_rep: {rec_rep.shape}")
+            print(f"edge_index: {edge_index.shape}")
+            print(f"edge_rep: {edge_rep.shape}")
             memory_tracker.end_operation()
             raise e
 
