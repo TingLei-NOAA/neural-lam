@@ -232,33 +232,54 @@ def main(input_args=None):
     seed.seed_everything(args.seed)
 
     # Load data
-    train_loader = torch.utils.data.DataLoader(
-        WeatherDataset(
-            config_loader.dataset.name,
-            pred_length=args.ar_steps,
-            split="train",
-            subsample_step=args.step_length,
-            subset=bool(args.subset_ds),
-            control_only=args.control_only,
-        ),
-        args.batch_size,
-        shuffle=True,
-        num_workers=args.n_workers,
+    train_dataset = WeatherDataset(
+        config_loader.dataset.name,
+        pred_length=args.ar_steps,
+        split="train",
+        subsample_step=args.step_length,
+        subset=bool(args.subset_ds),
+        control_only=args.control_only,
     )
-#clt    max_pred_length = (65 // args.step_length) - 2  # 19
-    max_pred_length = (19 // args.step_length) - 2  # 19
-    val_loader = torch.utils.data.DataLoader(
-        WeatherDataset(
-            config_loader.dataset.name,
-            pred_length=max_pred_length,
-            split="val",
-            subsample_step=args.step_length,
-            subset=bool(args.subset_ds),
-            control_only=args.control_only,
-        ),
-        args.batch_size,
-        shuffle=False,
+    
+    # Create samplers for distributed training
+    train_sampler = torch.utils.data.distributed.DistributedSampler(
+        train_dataset,
+        shuffle=True,
+        drop_last=True
+    )
+    
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset,
+        batch_size=args.batch_size,
+        sampler=train_sampler,  # Use the distributed sampler
         num_workers=args.n_workers,
+        pin_memory=False,  # Disable pin_memory for CPU
+        persistent_workers=True,  # Keep workers alive between epochs
+    )
+
+    max_pred_length = (19 // args.step_length) - 2
+    val_dataset = WeatherDataset(
+        config_loader.dataset.name,
+        pred_length=max_pred_length,
+        split="val",
+        subsample_step=args.step_length,
+        subset=bool(args.subset_ds),
+        control_only=args.control_only,
+    )
+    
+    val_sampler = torch.utils.data.distributed.DistributedSampler(
+        val_dataset,
+        shuffle=False,
+        drop_last=True
+    )
+    
+    val_loader = torch.utils.data.DataLoader(
+        val_dataset,
+        batch_size=args.batch_size,
+        sampler=val_sampler,  # Use the distributed sampler
+        num_workers=args.n_workers,
+        pin_memory=False,
+        persistent_workers=True,
     )
 
     # Force CPU usage for better memory management
@@ -267,6 +288,15 @@ def main(input_args=None):
     # Configure CPU memory optimizations
     torch.set_num_threads(4)  # Limit number of threads to prevent memory explosion
     torch.set_num_interop_threads(4)  # Limit inter-op parallelism
+
+    # Configure process group for DDP
+    os.environ["MASTER_ADDR"] = "localhost"
+    os.environ["MASTER_PORT"] = "12355"
+    torch.distributed.init_process_group(
+        backend="gloo",
+        world_size=ntasks_per_node * num_nodes,
+        rank=int(os.getenv("SLURM_PROCID", 0))
+    )
     
     # Load model parameters Use new args for model
     model_class = MODELS[args.model]
@@ -327,7 +357,7 @@ def main(input_args=None):
     trainer = pl.Trainer(
         max_epochs=args.epochs,
         deterministic=True,
-        strategy="ddp",  # Use DDP for distributed training on CPU
+        strategy="ddp",
         accelerator=device_name,
         devices=ntasks_per_node,
         num_nodes=num_nodes,
@@ -335,10 +365,11 @@ def main(input_args=None):
         callbacks=[checkpoint_callback, MemoryMonitorCallback()],
         check_val_every_n_epoch=args.val_interval,
         precision=args.precision,
-        profiler="advanced",  # This will give detailed profiling information
-        log_every_n_steps=1,   # This will give more frequent updates
-        accumulate_grad_batches=2,  # Accumulate gradients to save memory
-        gradient_clip_val=1.0,  # Add gradient clipping
+        profiler="advanced",
+        log_every_n_steps=1,
+        accumulate_grad_batches=2,
+        gradient_clip_val=1.0,
+        replace_sampler_ddp=False,  # We're manually handling the samplers
     )
 
     # Only init once, on rank 0 only
@@ -366,22 +397,6 @@ def main(input_args=None):
 
         print(f"Running evaluation on {args.eval}")
         # Train model
-#        for batch in eval_loader:
-#                print(f"Batch contains {len(batch)} elements")
-#                for i, element in enumerate(batch):
-#                    print(f"Element {i}: Type: {type(element)}")
-#                    if isinstance(element, torch.Tensor):  # If it's a tensor, print its shape and dtype
-#                        print(f"Element {i}: Shape: {element.shape}, Dtype: {element.dtype}")
-#                    else:
-#                        print(f"Element {i}: Content: {element}")
-#        for batch in eval_loader:
-#                print(f"val Batch contains {len(batch)} elements")
-#                for i, element in enumerate(batch):
-#                    print(f"val Element {i}: Type: {type(element)}")
-#                    if isinstance(element, torch.Tensor):  # If it's a tensor, print its shape and dtype
-#                        #print(f"val Element {i}: Shape: {element.shape}, Dtype: {element.dtype}")
-#                    else:
-#                        print(f"val Element {i}: Content: {element}")
         device = torch.device('cpu')
         print(f'thinkdebUsing device: {device}')
         model.to(device)                                                      #clt
