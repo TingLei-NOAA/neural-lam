@@ -4,9 +4,9 @@
 0: thinkdeb sample_dir_path  data/rrfs_3km_examples/samples/val
 0: thinkdeb sample_name 
 0: thinkdeb in ar_model data_config  data_config_3km.yaml
-0: thinkdeb in ar_model config_loader  <neural_lam.config.Config object at 0x14a2f1920d90>
+0: thinkdeb in ar_model config_loader  <neural_lam.config.Config object at 0x147a1d4a0b80>
 0: thinkdeb in ar_model data of   3km_border_mask.npy
-0: thinkdeb in load_static_data config_loader <neural_lam.config.Config object at 0x14a2f1920d90>
+0: thinkdeb in load_static_data config_loader <neural_lam.config.Config object at 0x147a1d4a0b80>
 0: thinkdeb in load_static_data list(config_loader) ['__class__', '__contains__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattr__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'coords_projection', 'from_file', 'num_data_vars', 'values']
 0: Loaded graph with 1971570 nodes (1905141 grid, 66429 mesh)
 0: Loaded hierarchical graph with structure:
@@ -23,149 +23,43 @@
 0:   3<->4
 0:  - 81 up edges, 81 down edges
 0: level 4 - 9 nodes, 40 same-level edges
-0: thinkdeb run_name is  hi_lam-4x64-01_22_18-8522
+0: thinkdeb run_name is  hi_lam-4x64-01_22_18-0861
 0: thinkdeb type of precision  <class 'int'> value is  32
-0: thinkdeb checkpoint_callback <pytorch_lightning.callbacks.model_checkpoint.ModelCheckpoint object at 0x14a2f2b819d0>
+0: thinkdeb checkpoint_callback <pytorch_lightning.callbacks.model_checkpoint.ModelCheckpoint object at 0x147a1e6fdd00>
 0: Checkpoint Callback Configuration:
-0:   dirpath: /scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/saved_models/hi_lam-4x64-01_22_18-8522
+0:   dirpath: /scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/saved_models/hi_lam-4x64-01_22_18-0861
 0:   filename: min_val_loss
 0:   monitor: val_mean_loss
 0:   save_top_k: 1
 0:   mode: min
 0:   save_last: True
 0:   every_n_epochs: 1
-0: thinkdeb0 after loader Memory usage: 1005.49 MB
+0: thinkdeb0 after loader Memory usage: 1005.38 MB
 0: thinkdebUsing device: cpu
 0: 
 0: Memory Check at Before model to device:
 0: Total system memory: 251.55 GB
-0: Available memory: 242.66 GB
-0: Used memory: 6.73 GB
+0: Available memory: 243.04 GB
+0: Used memory: 6.49 GB
 0: Process memory usage: 0.98 GB
 0: Process memory limits - Soft: unlimited, Hard: unlimited
 0: 
 0: Memory Check at After model to device:
 0: Total system memory: 251.55 GB
-0: Available memory: 242.77 GB
-0: Used memory: 6.61 GB
+0: Available memory: 243.15 GB
+0: Used memory: 6.38 GB
 0: Process memory usage: 0.95 GB
 0: Process memory limits - Soft: unlimited, Hard: unlimited
-0: thinkdeb0 fit Memory usage: 976.46 MB
-3: thinkdeb sample_dir_path  data/rrfs_3km_examples/samples/train
-3: thinkdeb sample_name  2024050406_mbr001 2024050606_mbr000 2024050218_mbr001 2024050718_mbr000 2024050206_mbr001 2024050218_mbr002 2024050618_mbr002 2024050318_mbr001 2024050218_mbr000 2024050206_mbr000 2024050106_mbr002 2024050712_mbr001 2024050306_mbr000 2024050112_mbr001 2024050200_mbr002 2024050106_mbr001 2024050506_mbr001 2024050606_mbr001 2024050612_mbr002 2024050118_mbr001 2024050400_mbr002 2024050400_mbr001 2024050100_mbr001 2024050500_mbr000 2024050306_mbr001 2024050718_mbr001 2024050106_mbr000 2024050200_mbr001 2024050212_mbr002 2024050312_mbr002 2024050712_mbr000 2024050512_mbr001 2024050500_mbr001 2024050506_mbr000 2024050700_mbr002 2024050606_mbr002 2024050600_mbr000 2024050318_mbr002 2024050100_mbr000 2024050700_mbr000 2024050612_mbr000 2024050206_mbr002 2024050618_mbr000 2024050718_mbr002 2024050518_mbr000 2024050700_mbr001 2024050712_mbr002 2024050706_mbr000 2024050600_mbr002 2024050300_mbr002 2024050312_mbr001 2024050200_mbr000 2024050112_mbr002 2024050518_mbr001 2024050512_mbr002 2024050512_m
-3: br000 2024050100_mbr002 2024050506_mbr002 2024050618_mbr001 2024050312_mbr000 2024050406_mbr000 2024050300_mbr000 2024050406_mbr002 2024050518_mbr002 2024050612_mbr001 2024050118_mbr002 2024050112_mbr000 2024050212_mbr000 2024050300_mbr001 2024050118_mbr000 2024050706_mbr001 2024050212_mbr001 2024050318_mbr000 2024050306_mbr002 2024050706_mbr002 2024050500_mbr002 2024050600_mbr001 2024050400_mbr000
-3: thinkdeb sample_dir_path  data/rrfs_3km_examples/samples/val
-3: thinkdeb sample_name 
-3: thinkdeb in ar_model data_config  data_config_3km.yaml
-3: thinkdeb in ar_model config_loader  <neural_lam.config.Config object at 0x148348af4d60>
-3: thinkdeb in ar_model data of   3km_border_mask.npy
-3: thinkdeb in load_static_data config_loader <neural_lam.config.Config object at 0x148348af4d60>
-3: thinkdeb in load_static_data list(config_loader) ['__class__', '__contains__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattr__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'coords_projection', 'from_file', 'num_data_vars', 'values']
-3: Loaded graph with 1971570 nodes (1905141 grid, 66429 mesh)
-3: Loaded hierarchical graph with structure:
-3: level 0 - 59049 nodes, 469480 same-level edges
-3:   0<->1
-3:  - 59049 up edges, 59049 down edges
-3: level 1 - 6561 nodes, 51520 same-level edges
-3:   1<->2
-3:  - 6561 up edges, 6561 down edges
-3: level 2 - 729 nodes, 5512 same-level edges
-3:   2<->3
-3:  - 729 up edges, 729 down edges
-3: level 3 - 81 nodes, 544 same-level edges
-3:   3<->4
-3:  - 81 up edges, 81 down edges
-3: level 4 - 9 nodes, 40 same-level edges
-3: thinkdeb run_name is  hi_lam-4x64-01_22_18-9317
-3: thinkdeb type of precision  <class 'int'> value is  32
-3: thinkdeb checkpoint_callback <pytorch_lightning.callbacks.model_checkpoint.ModelCheckpoint object at 0x148349d569a0>
-3: Checkpoint Callback Configuration:
-3:   dirpath: /scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/saved_models/hi_lam-4x64-01_22_18-9317
-3:   filename: min_val_loss
-3:   monitor: val_mean_loss
-3:   save_top_k: 1
-3:   mode: min
-3:   save_last: True
-3:   every_n_epochs: 1
-3: thinkdeb0 after loader Memory usage: 1005.43 MB
-3: thinkdebUsing device: cpu
-3: 
-3: Memory Check at Before model to device:
-3: Total system memory: 251.55 GB
-3: Available memory: 242.66 GB
-3: Used memory: 6.73 GB
-3: Process memory usage: 0.98 GB
-3: Process memory limits - Soft: unlimited, Hard: unlimited
-3: 
-3: Memory Check at After model to device:
-3: Total system memory: 251.55 GB
-3: Available memory: 242.65 GB
-3: Used memory: 6.74 GB
-3: Process memory usage: 0.95 GB
-3: Process memory limits - Soft: unlimited, Hard: unlimited
-3: thinkdeb0 fit Memory usage: 976.41 MB
-1: thinkdeb sample_dir_path  data/rrfs_3km_examples/samples/train
-1: thinkdeb sample_name  2024050406_mbr001 2024050606_mbr000 2024050218_mbr001 2024050718_mbr000 2024050206_mbr001 2024050218_mbr002 2024050618_mbr002 2024050318_mbr001 2024050218_mbr000 2024050206_mbr000 2024050106_mbr002 2024050712_mbr001 2024050306_mbr000 2024050112_mbr001 2024050200_mbr002 2024050106_mbr001 2024050506_mbr001 2024050606_mbr001 2024050612_mbr002 2024050118_mbr001 2024050400_mbr002 2024050400_mbr001 2024050100_mbr001 2024050500_mbr000 2024050306_mbr001 2024050718_mbr001 2024050106_mbr000 2024050200_mbr001 2024050212_mbr002 2024050312_mbr002 2024050712_mbr000 2024050512_mbr001 2024050500_mbr001 2024050506_mbr000 2024050700_mbr002 2024050606_mbr002 2024050600_mbr000 2024050318_mbr002 2024050100_mbr000 2024050700_mbr000 2024050612_mbr000 2024050206_mbr002 2024050618_mbr000 2024050718_mbr002 2024050518_mbr000 2024050700_mbr001 2024050712_mbr002 2024050706_mbr000 2024050600_mbr002 2024050300_mbr002 2024050312_mbr001 2024050200_mbr000 2024050112_mbr002 2024050518_mbr001 2024050512_mbr002 2024050512_m
-1: br000 2024050100_mbr002 2024050506_mbr002 2024050618_mbr001 2024050312_mbr000 2024050406_mbr000 2024050300_mbr000 2024050406_mbr002 2024050518_mbr002 2024050612_mbr001 2024050118_mbr002 2024050112_mbr000 2024050212_mbr000 2024050300_mbr001 2024050118_mbr000 2024050706_mbr001 2024050212_mbr001 2024050318_mbr000 2024050306_mbr002 2024050706_mbr002 2024050500_mbr002 2024050600_mbr001 2024050400_mbr000
-1: thinkdeb sample_dir_path  data/rrfs_3km_examples/samples/val
-1: thinkdeb sample_name 
-1: thinkdeb in ar_model data_config  data_config_3km.yaml
-1: thinkdeb in ar_model config_loader  <neural_lam.config.Config object at 0x14b41e6b9e80>
-1: thinkdeb in ar_model data of   3km_border_mask.npy
-1: thinkdeb in load_static_data config_loader <neural_lam.config.Config object at 0x14b41e6b9e80>
-1: thinkdeb in load_static_data list(config_loader) ['__class__', '__contains__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattr__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'coords_projection', 'from_file', 'num_data_vars', 'values']
-1: Loaded graph with 1971570 nodes (1905141 grid, 66429 mesh)
-1: Loaded hierarchical graph with structure:
-1: level 0 - 59049 nodes, 469480 same-level edges
-1:   0<->1
-1:  - 59049 up edges, 59049 down edges
-1: level 1 - 6561 nodes, 51520 same-level edges
-1:   1<->2
-1:  - 6561 up edges, 6561 down edges
-1: level 2 - 729 nodes, 5512 same-level edges
-1:   2<->3
-1:  - 729 up edges, 729 down edges
-1: level 3 - 81 nodes, 544 same-level edges
-1:   3<->4
-1:  - 81 up edges, 81 down edges
-1: level 4 - 9 nodes, 40 same-level edges
-1: thinkdeb run_name is  hi_lam-4x64-01_22_18-2104
-1: thinkdeb type of precision  <class 'int'> value is  32
-1: thinkdeb checkpoint_callback <pytorch_lightning.callbacks.model_checkpoint.ModelCheckpoint object at 0x14b41f909ac0>
-1: Checkpoint Callback Configuration:
-1:   dirpath: /scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/saved_models/hi_lam-4x64-01_22_18-2104
-1:   filename: min_val_loss
-1:   monitor: val_mean_loss
-1:   save_top_k: 1
-1:   mode: min
-1:   save_last: True
-1:   every_n_epochs: 1
-1: thinkdeb0 after loader Memory usage: 1005.70 MB
-1: thinkdebUsing device: cpu
-1: 
-1: Memory Check at Before model to device:
-1: Total system memory: 251.55 GB
-1: Available memory: 242.66 GB
-1: Used memory: 6.73 GB
-1: Process memory usage: 0.98 GB
-1: Process memory limits - Soft: unlimited, Hard: unlimited
-1: 
-1: Memory Check at After model to device:
-1: Total system memory: 251.55 GB
-1: Available memory: 242.77 GB
-1: Used memory: 6.62 GB
-1: Process memory usage: 0.95 GB
-1: Process memory limits - Soft: unlimited, Hard: unlimited
-1: thinkdeb0 fit Memory usage: 976.67 MB
+0: thinkdeb0 fit Memory usage: 976.35 MB
 2: thinkdeb sample_dir_path  data/rrfs_3km_examples/samples/train
 2: thinkdeb sample_name  2024050406_mbr001 2024050606_mbr000 2024050218_mbr001 2024050718_mbr000 2024050206_mbr001 2024050218_mbr002 2024050618_mbr002 2024050318_mbr001 2024050218_mbr000 2024050206_mbr000 2024050106_mbr002 2024050712_mbr001 2024050306_mbr000 2024050112_mbr001 2024050200_mbr002 2024050106_mbr001 2024050506_mbr001 2024050606_mbr001 2024050612_mbr002 2024050118_mbr001 2024050400_mbr002 2024050400_mbr001 2024050100_mbr001 2024050500_mbr000 2024050306_mbr001 2024050718_mbr001 2024050106_mbr000 2024050200_mbr001 2024050212_mbr002 2024050312_mbr002 2024050712_mbr000 2024050512_mbr001 2024050500_mbr001 2024050506_mbr000 2024050700_mbr002 2024050606_mbr002 2024050600_mbr000 2024050318_mbr002 2024050100_mbr000 2024050700_mbr000 2024050612_mbr000 2024050206_mbr002 2024050618_mbr000 2024050718_mbr002 2024050518_mbr000 2024050700_mbr001 2024050712_mbr002 2024050706_mbr000 2024050600_mbr002 2024050300_mbr002 2024050312_mbr001 2024050200_mbr000 2024050112_mbr002 2024050518_mbr001 2024050512_mbr002 2024050512_m
 2: br000 2024050100_mbr002 2024050506_mbr002 2024050618_mbr001 2024050312_mbr000 2024050406_mbr000 2024050300_mbr000 2024050406_mbr002 2024050518_mbr002 2024050612_mbr001 2024050118_mbr002 2024050112_mbr000 2024050212_mbr000 2024050300_mbr001 2024050118_mbr000 2024050706_mbr001 2024050212_mbr001 2024050318_mbr000 2024050306_mbr002 2024050706_mbr002 2024050500_mbr002 2024050600_mbr001 2024050400_mbr000
 2: thinkdeb sample_dir_path  data/rrfs_3km_examples/samples/val
 2: thinkdeb sample_name 
 2: thinkdeb in ar_model data_config  data_config_3km.yaml
-2: thinkdeb in ar_model config_loader  <neural_lam.config.Config object at 0x14ae5677dee0>
+2: thinkdeb in ar_model config_loader  <neural_lam.config.Config object at 0x151acc640e50>
 2: thinkdeb in ar_model data of   3km_border_mask.npy
-2: thinkdeb in load_static_data config_loader <neural_lam.config.Config object at 0x14ae5677dee0>
+2: thinkdeb in load_static_data config_loader <neural_lam.config.Config object at 0x151acc640e50>
 2: thinkdeb in load_static_data list(config_loader) ['__class__', '__contains__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattr__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'coords_projection', 'from_file', 'num_data_vars', 'values']
 2: Loaded graph with 1971570 nodes (1905141 grid, 66429 mesh)
 2: Loaded hierarchical graph with structure:
@@ -182,268 +76,140 @@
 2:   3<->4
 2:  - 81 up edges, 81 down edges
 2: level 4 - 9 nodes, 40 same-level edges
-2: thinkdeb run_name is  hi_lam-4x64-01_22_18-1393
+2: thinkdeb run_name is  hi_lam-4x64-01_22_18-0944
 2: thinkdeb type of precision  <class 'int'> value is  32
-2: thinkdeb checkpoint_callback <pytorch_lightning.callbacks.model_checkpoint.ModelCheckpoint object at 0x14ae579deb20>
+2: thinkdeb checkpoint_callback <pytorch_lightning.callbacks.model_checkpoint.ModelCheckpoint object at 0x151acd8a0a90>
 2: Checkpoint Callback Configuration:
-2:   dirpath: /scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/saved_models/hi_lam-4x64-01_22_18-1393
+2:   dirpath: /scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/saved_models/hi_lam-4x64-01_22_18-0944
 2:   filename: min_val_loss
 2:   monitor: val_mean_loss
 2:   save_top_k: 1
 2:   mode: min
 2:   save_last: True
 2:   every_n_epochs: 1
-2: thinkdeb0 after loader Memory usage: 1005.58 MB
+2: thinkdeb0 after loader Memory usage: 1005.29 MB
 2: thinkdebUsing device: cpu
 2: 
 2: Memory Check at Before model to device:
 2: Total system memory: 251.55 GB
-2: Available memory: 242.66 GB
-2: Used memory: 6.73 GB
+2: Available memory: 243.04 GB
+2: Used memory: 6.49 GB
 2: Process memory usage: 0.98 GB
 2: Process memory limits - Soft: unlimited, Hard: unlimited
 2: 
 2: Memory Check at After model to device:
 2: Total system memory: 251.55 GB
-2: Available memory: 242.75 GB
-2: Used memory: 6.64 GB
+2: Available memory: 243.13 GB
+2: Used memory: 6.39 GB
 2: Process memory usage: 0.95 GB
 2: Process memory limits - Soft: unlimited, Hard: unlimited
-2: thinkdeb0 fit Memory usage: 976.55 MB
-2: thinkdeb input shape and type  torch.Size([4, 1905141, 102])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 102])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 1905141, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([1571568, 3])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-2: thinkdeb input shape and type  torch.Size([1571568, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([7620564, 3])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-2: thinkdeb input shape and type  torch.Size([7620564, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([59049, 2])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
-2: thinkdeb input shape and type  torch.Size([59049, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 1571568, 192])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 1571568, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 1905141, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 1905141, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([6561, 2])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
-2: thinkdeb input shape and type  torch.Size([6561, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([729, 2])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
-2: thinkdeb input shape and type  torch.Size([729, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([81, 2])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
-2: thinkdeb input shape and type  torch.Size([81, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([9, 2])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
-2: thinkdeb input shape and type  torch.Size([9, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([469480, 3])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-2: thinkdeb input shape and type  torch.Size([469480, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([51520, 3])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-2: thinkdeb input shape and type  torch.Size([51520, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([5512, 3])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-2: thinkdeb input shape and type  torch.Size([5512, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([544, 3])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-2: thinkdeb input shape and type  torch.Size([544, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([40, 3])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-2: thinkdeb input shape and type  torch.Size([40, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([59049, 3])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-2: thinkdeb input shape and type  torch.Size([59049, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([6561, 3])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-2: thinkdeb input shape and type  torch.Size([6561, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([729, 3])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-2: thinkdeb input shape and type  torch.Size([729, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([81, 3])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-2: thinkdeb input shape and type  torch.Size([81, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([59049, 3])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-2: thinkdeb input shape and type  torch.Size([59049, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([6561, 3])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-2: thinkdeb input shape and type  torch.Size([6561, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([729, 3])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-2: thinkdeb input shape and type  torch.Size([729, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([81, 3])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-2: thinkdeb input shape and type  torch.Size([81, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 59049, 192])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 6561, 192])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 729, 192])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
-2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-2: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
-0: Sanity Checking: |          | 0/? [00:00<?, ?it/s]                                                  Training: |          | 0/? [00:00<?, ?it/s]Training:   0%|          | 0/3 [00:00<?, ?it/s]Epoch 0:   0%|          | 0/3 [00:00<?, ?it/s] thinkdeb input shape and type  torch.Size([4, 1905141, 102])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 102])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 1905141, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([1571568, 3])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-0: thinkdeb input shape and type  torch.Size([1571568, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([7620564, 3])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-0: thinkdeb input shape and type  torch.Size([7620564, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([59049, 2])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
-0: thinkdeb input shape and type  torch.Size([59049, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 1571568, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 1571568, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 1905141, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 1905141, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([6561, 2])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
-0: thinkdeb input shape and type  torch.Size([6561, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([729, 2])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
-0: thinkdeb input shape and type  torch.Size([729, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([81, 2])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
-0: thinkdeb input shape and type  torch.Size([81, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([9, 2])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
-0: thinkdeb input shape and type  torch.Size([9, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([469480, 3])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-0: thinkdeb input shape and type  torch.Size([469480, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([51520, 3])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-0: thinkdeb input shape and type  torch.Size([51520, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([5512, 3])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-0: thinkdeb input shape and type  torch.Size([5512, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([544, 3])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-0: thinkdeb input shape and type  torch.Size([544, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([40, 3])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-0: thinkdeb input shape and type  torch.Size([40, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([59049, 3])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-0: thinkdeb input shape and type  torch.Size([59049, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([6561, 3])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-0: thinkdeb input shape and type  torch.Size([6561, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([729, 3])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-0: thinkdeb input shape and type  torch.Size([729, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([81, 3])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-0: thinkdeb input shape and type  torch.Size([81, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([59049, 3])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-0: thinkdeb input shape and type  torch.Size([59049, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([6561, 3])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-0: thinkdeb input shape and type  torch.Size([6561, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([729, 3])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-0: thinkdeb input shape and type  torch.Size([729, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([81, 3])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
-0: thinkdeb input shape and type  torch.Size([81, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 59049, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 729, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+2: thinkdeb0 fit Memory usage: 976.27 MB
+3: thinkdeb sample_dir_path  data/rrfs_3km_examples/samples/train
+3: thinkdeb sample_name  2024050406_mbr001 2024050606_mbr000 2024050218_mbr001 2024050718_mbr000 2024050206_mbr001 2024050218_mbr002 2024050618_mbr002 2024050318_mbr001 2024050218_mbr000 2024050206_mbr000 2024050106_mbr002 2024050712_mbr001 2024050306_mbr000 2024050112_mbr001 2024050200_mbr002 2024050106_mbr001 2024050506_mbr001 2024050606_mbr001 2024050612_mbr002 2024050118_mbr001 2024050400_mbr002 2024050400_mbr001 2024050100_mbr001 2024050500_mbr000 2024050306_mbr001 2024050718_mbr001 2024050106_mbr000 2024050200_mbr001 2024050212_mbr002 2024050312_mbr002 2024050712_mbr000 2024050512_mbr001 2024050500_mbr001 2024050506_mbr000 2024050700_mbr002 2024050606_mbr002 2024050600_mbr000 2024050318_mbr002 2024050100_mbr000 2024050700_mbr000 2024050612_mbr000 2024050206_mbr002 2024050618_mbr000 2024050718_mbr002 2024050518_mbr000 2024050700_mbr001 2024050712_mbr002 2024050706_mbr000 2024050600_mbr002 2024050300_mbr002 2024050312_mbr001 2024050200_mbr000 2024050112_mbr002 2024050518_mbr001 2024050512_mbr002 2024050512_m
+3: br000 2024050100_mbr002 2024050506_mbr002 2024050618_mbr001 2024050312_mbr000 2024050406_mbr000 2024050300_mbr000 2024050406_mbr002 2024050518_mbr002 2024050612_mbr001 2024050118_mbr002 2024050112_mbr000 2024050212_mbr000 2024050300_mbr001 2024050118_mbr000 2024050706_mbr001 2024050212_mbr001 2024050318_mbr000 2024050306_mbr002 2024050706_mbr002 2024050500_mbr002 2024050600_mbr001 2024050400_mbr000
+3: thinkdeb sample_dir_path  data/rrfs_3km_examples/samples/val
+3: thinkdeb sample_name 
+3: thinkdeb in ar_model data_config  data_config_3km.yaml
+3: thinkdeb in ar_model config_loader  <neural_lam.config.Config object at 0x1508f1f5dca0>
+3: thinkdeb in ar_model data of   3km_border_mask.npy
+3: thinkdeb in load_static_data config_loader <neural_lam.config.Config object at 0x1508f1f5dca0>
+3: thinkdeb in load_static_data list(config_loader) ['__class__', '__contains__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattr__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'coords_projection', 'from_file', 'num_data_vars', 'values']
+3: Loaded graph with 1971570 nodes (1905141 grid, 66429 mesh)
+3: Loaded hierarchical graph with structure:
+3: level 0 - 59049 nodes, 469480 same-level edges
+3:   0<->1
+3:  - 59049 up edges, 59049 down edges
+3: level 1 - 6561 nodes, 51520 same-level edges
+3:   1<->2
+3:  - 6561 up edges, 6561 down edges
+3: level 2 - 729 nodes, 5512 same-level edges
+3:   2<->3
+3:  - 729 up edges, 729 down edges
+3: level 3 - 81 nodes, 544 same-level edges
+3:   3<->4
+3:  - 81 up edges, 81 down edges
+3: level 4 - 9 nodes, 40 same-level edges
+3: thinkdeb run_name is  hi_lam-4x64-01_22_18-2115
+3: thinkdeb type of precision  <class 'int'> value is  32
+3: thinkdeb checkpoint_callback <pytorch_lightning.callbacks.model_checkpoint.ModelCheckpoint object at 0x1508f31be8e0>
+3: Checkpoint Callback Configuration:
+3:   dirpath: /scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/saved_models/hi_lam-4x64-01_22_18-2115
+3:   filename: min_val_loss
+3:   monitor: val_mean_loss
+3:   save_top_k: 1
+3:   mode: min
+3:   save_last: True
+3:   every_n_epochs: 1
+3: thinkdeb0 after loader Memory usage: 1005.77 MB
+3: thinkdebUsing device: cpu
+3: 
+3: Memory Check at Before model to device:
+3: Total system memory: 251.55 GB
+3: Available memory: 243.04 GB
+3: Used memory: 6.49 GB
+3: Process memory usage: 0.98 GB
+3: Process memory limits - Soft: unlimited, Hard: unlimited
+3: 
+3: Memory Check at After model to device:
+3: Total system memory: 251.55 GB
+3: Available memory: 243.02 GB
+3: Used memory: 6.51 GB
+3: Process memory usage: 0.95 GB
+3: Process memory limits - Soft: unlimited, Hard: unlimited
+3: thinkdeb0 fit Memory usage: 976.75 MB
+1: thinkdeb sample_dir_path  data/rrfs_3km_examples/samples/train
+1: thinkdeb sample_name  2024050406_mbr001 2024050606_mbr000 2024050218_mbr001 2024050718_mbr000 2024050206_mbr001 2024050218_mbr002 2024050618_mbr002 2024050318_mbr001 2024050218_mbr000 2024050206_mbr000 2024050106_mbr002 2024050712_mbr001 2024050306_mbr000 2024050112_mbr001 2024050200_mbr002 2024050106_mbr001 2024050506_mbr001 2024050606_mbr001 2024050612_mbr002 2024050118_mbr001 2024050400_mbr002 2024050400_mbr001 2024050100_mbr001 2024050500_mbr000 2024050306_mbr001 2024050718_mbr001 2024050106_mbr000 2024050200_mbr001 2024050212_mbr002 2024050312_mbr002 2024050712_mbr000 2024050512_mbr001 2024050500_mbr001 2024050506_mbr000 2024050700_mbr002 2024050606_mbr002 2024050600_mbr000 2024050318_mbr002 2024050100_mbr000 2024050700_mbr000 2024050612_mbr000 2024050206_mbr002 2024050618_mbr000 2024050718_mbr002 2024050518_mbr000 2024050700_mbr001 2024050712_mbr002 2024050706_mbr000 2024050600_mbr002 2024050300_mbr002 2024050312_mbr001 2024050200_mbr000 2024050112_mbr002 2024050518_mbr001 2024050512_mbr002 2024050512_m
+1: br000 2024050100_mbr002 2024050506_mbr002 2024050618_mbr001 2024050312_mbr000 2024050406_mbr000 2024050300_mbr000 2024050406_mbr002 2024050518_mbr002 2024050612_mbr001 2024050118_mbr002 2024050112_mbr000 2024050212_mbr000 2024050300_mbr001 2024050118_mbr000 2024050706_mbr001 2024050212_mbr001 2024050318_mbr000 2024050306_mbr002 2024050706_mbr002 2024050500_mbr002 2024050600_mbr001 2024050400_mbr000
+1: thinkdeb sample_dir_path  data/rrfs_3km_examples/samples/val
+1: thinkdeb sample_name 
+1: thinkdeb in ar_model data_config  data_config_3km.yaml
+1: thinkdeb in ar_model config_loader  <neural_lam.config.Config object at 0x147109703c40>
+1: thinkdeb in ar_model data of   3km_border_mask.npy
+1: thinkdeb in load_static_data config_loader <neural_lam.config.Config object at 0x147109703c40>
+1: thinkdeb in load_static_data list(config_loader) ['__class__', '__contains__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattr__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'coords_projection', 'from_file', 'num_data_vars', 'values']
+1: Loaded graph with 1971570 nodes (1905141 grid, 66429 mesh)
+1: Loaded hierarchical graph with structure:
+1: level 0 - 59049 nodes, 469480 same-level edges
+1:   0<->1
+1:  - 59049 up edges, 59049 down edges
+1: level 1 - 6561 nodes, 51520 same-level edges
+1:   1<->2
+1:  - 6561 up edges, 6561 down edges
+1: level 2 - 729 nodes, 5512 same-level edges
+1:   2<->3
+1:  - 729 up edges, 729 down edges
+1: level 3 - 81 nodes, 544 same-level edges
+1:   3<->4
+1:  - 81 up edges, 81 down edges
+1: level 4 - 9 nodes, 40 same-level edges
+1: thinkdeb run_name is  hi_lam-4x64-01_22_18-3028
+1: thinkdeb type of precision  <class 'int'> value is  32
+1: thinkdeb checkpoint_callback <pytorch_lightning.callbacks.model_checkpoint.ModelCheckpoint object at 0x14710a9719d0>
+1: Checkpoint Callback Configuration:
+1:   dirpath: /scratch2/NCEPDEV/fv3-cam/Ting.Lei/dr-tleifork-neural-lam/neural-lam_3km/saved_models/hi_lam-4x64-01_22_18-3028
+1:   filename: min_val_loss
+1:   monitor: val_mean_loss
+1:   save_top_k: 1
+1:   mode: min
+1:   save_last: True
+1:   every_n_epochs: 1
+1: thinkdeb0 after loader Memory usage: 1005.40 MB
+1: thinkdebUsing device: cpu
+1: 
+1: Memory Check at Before model to device:
+1: Total system memory: 251.55 GB
+1: Available memory: 243.04 GB
+1: Used memory: 6.49 GB
+1: Process memory usage: 0.98 GB
+1: Process memory limits - Soft: unlimited, Hard: unlimited
+1: 
+1: Memory Check at After model to device:
+1: Total system memory: 251.55 GB
+1: Available memory: 243.15 GB
+1: Used memory: 6.37 GB
+1: Process memory usage: 0.95 GB
+1: Process memory limits - Soft: unlimited, Hard: unlimited
+1: thinkdeb0 fit Memory usage: 976.38 MB
 3: thinkdeb input shape and type  torch.Size([4, 1905141, 102])   torch.float32
 3: thinkdeb weight shape and type  torch.Size([64, 102])   torch.float32
 3: thinkdeb input shape and type  torch.Size([4, 1905141, 64])   torch.float32
@@ -678,6 +444,240 @@
 1: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
 1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
 1: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 1905141, 102])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 102])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 1905141, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([1571568, 3])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+2: thinkdeb input shape and type  torch.Size([1571568, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([7620564, 3])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+2: thinkdeb input shape and type  torch.Size([7620564, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([59049, 2])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
+2: thinkdeb input shape and type  torch.Size([59049, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 1571568, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 1571568, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 1905141, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 1905141, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([6561, 2])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
+2: thinkdeb input shape and type  torch.Size([6561, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([729, 2])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
+2: thinkdeb input shape and type  torch.Size([729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([81, 2])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
+2: thinkdeb input shape and type  torch.Size([81, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([9, 2])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
+2: thinkdeb input shape and type  torch.Size([9, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([469480, 3])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+2: thinkdeb input shape and type  torch.Size([469480, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([51520, 3])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+2: thinkdeb input shape and type  torch.Size([51520, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([5512, 3])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+2: thinkdeb input shape and type  torch.Size([5512, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([544, 3])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+2: thinkdeb input shape and type  torch.Size([544, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([40, 3])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+2: thinkdeb input shape and type  torch.Size([40, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([59049, 3])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+2: thinkdeb input shape and type  torch.Size([59049, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([6561, 3])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+2: thinkdeb input shape and type  torch.Size([6561, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([729, 3])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+2: thinkdeb input shape and type  torch.Size([729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([81, 3])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+2: thinkdeb input shape and type  torch.Size([81, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([59049, 3])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+2: thinkdeb input shape and type  torch.Size([59049, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([6561, 3])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+2: thinkdeb input shape and type  torch.Size([6561, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([729, 3])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+2: thinkdeb input shape and type  torch.Size([729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([81, 3])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+2: thinkdeb input shape and type  torch.Size([81, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 59049, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+0: Sanity Checking: |          | 0/? [00:00<?, ?it/s]                                                  Training: |          | 0/? [00:00<?, ?it/s]Training:   0%|          | 0/5 [00:00<?, ?it/s]Epoch 0:   0%|          | 0/5 [00:00<?, ?it/s] thinkdeb input shape and type  torch.Size([4, 1905141, 102])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 102])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 1905141, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([1571568, 3])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+0: thinkdeb input shape and type  torch.Size([1571568, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([7620564, 3])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+0: thinkdeb input shape and type  torch.Size([7620564, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([59049, 2])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
+0: thinkdeb input shape and type  torch.Size([59049, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 1571568, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 1571568, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 1905141, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 1905141, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([6561, 2])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
+0: thinkdeb input shape and type  torch.Size([6561, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([729, 2])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
+0: thinkdeb input shape and type  torch.Size([729, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([81, 2])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
+0: thinkdeb input shape and type  torch.Size([81, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([9, 2])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 2])   torch.float32
+0: thinkdeb input shape and type  torch.Size([9, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([469480, 3])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+0: thinkdeb input shape and type  torch.Size([469480, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([51520, 3])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+0: thinkdeb input shape and type  torch.Size([51520, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([5512, 3])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+0: thinkdeb input shape and type  torch.Size([5512, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([544, 3])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+0: thinkdeb input shape and type  torch.Size([544, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([40, 3])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+0: thinkdeb input shape and type  torch.Size([40, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([59049, 3])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+0: thinkdeb input shape and type  torch.Size([59049, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([6561, 3])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+0: thinkdeb input shape and type  torch.Size([6561, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([729, 3])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+0: thinkdeb input shape and type  torch.Size([729, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([81, 3])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+0: thinkdeb input shape and type  torch.Size([81, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([59049, 3])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+0: thinkdeb input shape and type  torch.Size([59049, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([6561, 3])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+0: thinkdeb input shape and type  torch.Size([6561, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([729, 3])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+0: thinkdeb input shape and type  torch.Size([729, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([81, 3])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 3])   torch.float32
+0: thinkdeb input shape and type  torch.Size([81, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
 3: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
 3: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
 3: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
@@ -906,120 +906,6 @@
 1: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
 1: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
 1: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 81, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 40, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 40, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 81, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 544, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 544, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 729, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 5512, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 5512, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 51520, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 51520, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 59049, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 469480, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 469480, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 469480, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 469480, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 59049, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 51520, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 51520, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 192])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
-0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
-0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
 2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
 2: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
 2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
@@ -1134,8 +1020,127 @@
 2: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
 2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
 2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 40, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 40, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 544, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 544, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 5512, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 5512, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 51520, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 51520, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 469480, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 469480, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 469480, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 469480, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 51520, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 51520, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
 0: thinkdeb weight shape and type  torch.Size([64, 64])   xxx in getimem weather data
 0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050612_mbr002.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050712_mbr000.npy
 0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
 0: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
 0: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
@@ -1145,7 +1150,17 @@
 0: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
 0: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
 0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050106_mbr000.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
 0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050200_mbr000.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050400_mbr001.npy
 0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
 0: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
 0: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
@@ -1155,32 +1170,569 @@
 0: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
 0: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
 0: xxx in getimem weather data
+0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050118_mbr002.npy
+0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+0: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+0: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+0: xxx in getimem weather data
 0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050518_mbr001.npy
-0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
-0: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
-0: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
-0: xxx in getimem weather data
-0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050312_mbr001.npy
-0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
-0: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
-0: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
-0: xxx in getimem weather data
-0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050506_mbr001.npy
-0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
-0: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
-0: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
-0: xxx in getimem weather data
-0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050100_mbr001.npy
-0: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
-0: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
-0: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
-0: xxx in getimem weather data
-0: file is  data/rrfs_3km_examples/samples/train/nwp_2024050118_mbr001.npy
-2: thinkdeb weight shape and type  torch.Size([64, 64])   
-1: thinkdeb weight shape and type  torch.Size([64, 64])   
-3: thinkdeb weight shape and type  torch.Size([64, 64])   
+1: thinkdeb weight shape and type  torch.Size([64, 64])   xxx in getimem weather data
+1: file is  data/rrfs_3km_examples/samples/train/nwp_2024050112_mbr002.npy
+1: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+1: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+1: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+1: xxx in getimem weather data
+1: file is  data/rrfs_3km_examples/samples/train/nwp_2024050606_mbr001.npy
+1: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+1: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+1: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+1: xxx in getimem weather data
+1: file is  data/rrfs_3km_examples/samples/train/nwp_2024050518_mbr000.npy
+1: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+1: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+1: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+1: xxx in getimem weather data
+1: file is  data/rrfs_3km_examples/samples/train/nwp_2024050318_mbr002.npy
+1: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+1: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+1: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+1: xxx in getimem weather data
+1: file is  data/rrfs_3km_examples/samples/train/nwp_2024050612_mbr000.npy
+1: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+1: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+1: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+1: xxx in getimem weather data
+1: file is  data/rrfs_3km_examples/samples/train/nwp_2024050206_mbr000.npy
+1: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+1: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+1: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+1: xxx in getimem weather data
+1: file is  data/rrfs_3km_examples/samples/train/nwp_2024050718_mbr000.npy
+1: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+1: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+1: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+1: xxx in getimem weather data
+1: file is  data/rrfs_3km_examples/samples/train/nwp_2024050112_mbr000.npy
+1: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+1: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+1: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+1: xxx in getimem weather data
+1: file is  data/rrfs_3km_examples/samples/train/nwp_2024050718_mbr001.npy
+1: torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 5512, 192])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 5512, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 729, 192])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 544, 192])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 544, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 81, 192])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 40, 192])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 40, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 40, 192])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 40, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 81, 192])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 544, 192])   torch.float32
+0: torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 5512, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 5512, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 544, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 544, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 40, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 40, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 40, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 40, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 544, 192])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 544, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 729, 192])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 5512, 192])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 5512, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 6561, 192])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 51520, 192])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 51520, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 59049, 192])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 469480, 192])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 469480, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+1: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+1: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+1: 
+1: Memory Check at Training ERROR:
+1: Total system memory: 251.55 GB
+1: Available memory: 27.24 GB
+1: Used memory: 198.95 GB
+1: Process memory usage: 54.17 GB
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 544, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 5512, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 5512, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 51520, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 51520, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 469480, 192])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+0: thinkdeb input shape and type  torch.Size([4, 469480, 64])   torch.float32
+0: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+0: 
+0: Memory Check at Training ERROR:
+0: Total system memory: 251.55 GB
+0: Available memory: 27.24 GB
+0: Used memory: 198.95 GB
+0: Process memory usage: 53.54 GB
+0: Process memory limits - Soft: unlimited, Hard: unlimited
+1: Process memory limits - Soft: unlimited, Hard: unlimited
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 5512, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 5512, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 544, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 544, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 40, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 40, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 40, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 40, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 544, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 544, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 5512, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 5512, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 51520, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 51520, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 59049, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 469480, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 469480, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 469480, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 469480, 64])   torch.float32
+3: thinkdeb weight shape and type  torch.Size([64, 64])   xxx in getimem weather data
+3: file is  data/rrfs_3km_examples/samples/train/nwp_2024050212_mbr000.npy
+3: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+3: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+3: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+3: xxx in getimem weather data
+3: file is  data/rrfs_3km_examples/samples/train/nwp_2024050512_mbr000.npy
+3: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+3: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+3: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+3: xxx in getimem weather data
+3: file is  data/rrfs_3km_examples/samples/train/nwp_2024050212_mbr002.npy
+3: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+3: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+3: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+3: xxx in getimem weather data
+3: file is  data/rrfs_3km_examples/samples/train/nwp_2024050306_mbr002.npy
+3: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+3: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+3: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+3: xxx in getimem weather data
+3: file is  data/rrfs_3km_examples/samples/train/nwp_2024050618_mbr002.npy
+3: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+3: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+3: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+3: xxx in getimem weather data
+3: file is  data/rrfs_3km_examples/samples/train/nwp_2024050312_mbr002.npy
+3: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+3: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+3: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+3: xxx in getimem weather data
+3: file is  data/rrfs_3km_examples/samples/train/nwp_2024050518_mbr002.npy
+3: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+3: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+3: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+3: xxx in getimem weather data
+3: file is  data/rrfs_3km_examples/samples/train/nwp_2024050300_mbr001.npy
+3: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+3: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+3: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+3: xxx in getimem weather data
+3: file is  data/rrfs_3km_examples/samples/train/nwp_2024050218_mbr001.npy
+3: init_state.shape  torch.Size([2, 1905141, 41]) dtype torch.float32
+3: target_state.shape  torch.Size([1, 1905141, 41]) dtype: torch.float32
+3: forcing.shape  torch.Size([1, 1905141, 16]) dtype : torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 59049, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 59049, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 59049, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 51520, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 51520, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 5512, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 5512, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 544, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 544, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 40, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 40, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 40, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 40, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 9, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 9, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 544, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 544, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 81, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 5512, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 5512, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 729, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 192])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 192])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 64])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 64])   torch.float32
+2: thinkdeb input shape and type  torch.Size([4, 6561, 128])   torch.float32
+2: thinkdeb weight shape and type  torch.Size([64, 128])   torch.float32
+2: thinkdeb input shape and type  
 _______________________________________________________________
-Start Epilog on node h26n07 for job 5497977 :: Wed Jan 22 18:45:30 UTC 2025
-Job 5497977 finished for user Ting.Lei in partition fge with exit code 0:0
+Start Epilog on node h28n12 for job 5499432 :: Wed Jan 22 19:02:11 UTC 2025
+Job 5499432 finished for user Ting.Lei in partition fge with exit code 0:0
 _______________________________________________________________
-End Epilogue Wed Jan 22 18:45:30 UTC 2025
+End Epilogue Wed Jan 22 19:02:11 UTC 2025
