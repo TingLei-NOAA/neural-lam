@@ -274,14 +274,11 @@ class InteractionNet(pyg.nn.MessagePassing):
             # Default to input dim if not explicitly given
             hidden_dim = input_dim
 
-        # Make both sender and receiver indices of edge_index start at 0
-        edge_index = edge_index - edge_index.min(dim=1, keepdim=True)[0]
-        # Store number of receiver nodes according to edge_index
-        self.num_rec = edge_index[1].max() + 1
-        edge_index[0] = (
-            edge_index[0] + self.num_rec
-        )  # Make sender indices after rec
+        # Store edge indices as is, without modification
         self.register_buffer("edge_index", edge_index, persistent=False)
+        # Store number of receiver and sender nodes
+        self.num_rec = edge_index[1].max().item() + 1
+        self.num_send = edge_index[0].max().item() + 1
 
         # Create MLPs
         edge_mlp_recipe = [3 * input_dim] + [hidden_dim] * (hidden_layers + 1)
@@ -366,28 +363,35 @@ class InteractionNet(pyg.nn.MessagePassing):
         memory_tracker.start_operation("forward_chunk")
         
         try:
-            # Log input sizes
+            # Log input sizes and shapes
             memory_tracker.log_tensor("chunk_send_rep", send_rep)
             memory_tracker.log_tensor("chunk_rec_rep", rec_rep)
             memory_tracker.log_tensor("chunk_edge_index", edge_index)
             memory_tracker.log_tensor("chunk_edge_rep", edge_rep)
+            
+            print(f"Debug - Input shapes:")
+            print(f"send_rep: {send_rep.shape}")
+            print(f"rec_rep: {rec_rep.shape}")
+            print(f"edge_index: {edge_index.shape}")
+            print(f"edge_rep: {edge_rep.shape}")
             
             # Process in smaller sub-chunks
             sub_chunk_size = 50000  # Adjust based on available memory
             num_edges = edge_index.size(1)
             edge_features_list = []
             
-            # Get unique node indices and create mapping
-            unique_send = torch.unique(edge_index[0])
-            unique_rec = torch.unique(edge_index[1])
+            # Ensure indices are within bounds
+            send_size = send_rep.size(0)
+            rec_size = rec_rep.size(0)
             
-            # Create mappings from global to local indices
-            send_mapping = {int(idx): i for i, idx in enumerate(unique_send)}
-            rec_mapping = {int(idx): i for i, idx in enumerate(unique_rec)}
+            # Mask for valid indices
+            valid_edges_mask = (edge_index[0] < send_size) & (edge_index[1] < rec_size)
+            edge_index = edge_index[:, valid_edges_mask]
+            if edge_rep.dim() > 1:
+                edge_rep = edge_rep[valid_edges_mask]
             
-            # Create local representations
-            local_send_rep = send_rep[unique_send]
-            local_rec_rep = rec_rep[unique_rec]
+            # Update num_edges after filtering
+            num_edges = edge_index.size(1)
             
             for start_idx in range(0, num_edges, sub_chunk_size):
                 memory_tracker.start_operation(f"sub_chunk_{start_idx}")
@@ -395,15 +399,13 @@ class InteractionNet(pyg.nn.MessagePassing):
                 end_idx = min(start_idx + sub_chunk_size, num_edges)
                 sub_edge_index = edge_index[:, start_idx:end_idx]
                 
-                # Map global indices to local indices
-                sub_send_nodes = torch.tensor([send_mapping[int(idx)] for idx in sub_edge_index[0]], 
-                                           device=sub_edge_index.device)
-                sub_rec_nodes = torch.tensor([rec_mapping[int(idx)] for idx in sub_edge_index[1]], 
-                                          device=sub_edge_index.device)
+                # Get corresponding nodes for this sub-chunk
+                sub_send_nodes = sub_edge_index[0]
+                sub_rec_nodes = sub_edge_index[1]
                 
-                # Extract features using local indices
-                sub_send_rep = local_send_rep[sub_send_nodes]
-                sub_rec_rep = local_rec_rep[sub_rec_nodes]
+                # Extract features for nodes in this sub-chunk
+                sub_send_rep = send_rep[sub_send_nodes]
+                sub_rec_rep = rec_rep[sub_rec_nodes]
                 
                 # Handle edge representation
                 if edge_rep.dim() > 1:
@@ -422,6 +424,11 @@ class InteractionNet(pyg.nn.MessagePassing):
                 gc.collect()
                 memory_tracker.end_operation()
             
+            if not edge_features_list:
+                print("Warning: No valid edges found after filtering")
+                # Return zero tensor with correct shape
+                return torch.zeros_like(rec_rep)
+            
             # Combine features
             memory_tracker.start_operation("combine_features")
             edge_features = torch.cat(edge_features_list, dim=0)
@@ -429,36 +436,9 @@ class InteractionNet(pyg.nn.MessagePassing):
             gc.collect()
             memory_tracker.end_operation()
             
-            # Aggregate messages in chunks
+            # Aggregate messages
             memory_tracker.start_operation("aggregate_messages")
-            aggr_chunk_size = 10000  # Adjust based on available memory
-            aggr_messages_list = []
-            
-            for start_idx in range(0, len(unique_rec), aggr_chunk_size):
-                end_idx = min(start_idx + aggr_chunk_size, len(unique_rec))
-                receiver_subset = unique_rec[start_idx:end_idx]
-                
-                # Get messages for these receivers
-                receiver_mask = torch.isin(edge_index[1], receiver_subset)
-                subset_features = edge_features[receiver_mask]
-                subset_edge_index = edge_index[:, receiver_mask]
-                
-                # Map global indices to local for aggregation
-                local_edge_index = torch.tensor([rec_mapping[int(idx)] for idx in subset_edge_index[1]], 
-                                             device=subset_edge_index.device)
-                
-                # Aggregate using local indices
-                subset_messages = self.aggregate(subset_features, local_edge_index - start_idx, dim=0)
-                aggr_messages_list.append(subset_messages)
-                
-                # Clean up
-                del subset_features, subset_edge_index, receiver_mask, local_edge_index
-                gc.collect()
-            
-            # Combine aggregated messages
-            aggr_messages = torch.cat(aggr_messages_list, dim=0)
-            del aggr_messages_list
-            gc.collect()
+            aggr_messages = self.aggregate(edge_features, edge_index[1], dim=0, size=rec_size)
             memory_tracker.end_operation()
             
             # Final node update
@@ -476,6 +456,7 @@ class InteractionNet(pyg.nn.MessagePassing):
             print(f"rec_rep: {rec_rep.shape}")
             print(f"edge_index: {edge_index.shape}")
             print(f"edge_rep: {edge_rep.shape}")
+            print(f"Edge index max values: {edge_index.max(dim=1)[0]}")
             memory_tracker.end_operation()
             raise e
 
