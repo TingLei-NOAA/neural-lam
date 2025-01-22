@@ -377,19 +377,33 @@ class InteractionNet(pyg.nn.MessagePassing):
             num_edges = edge_index.size(1)
             edge_features_list = []
             
+            # Get unique node indices and create mapping
+            unique_send = torch.unique(edge_index[0])
+            unique_rec = torch.unique(edge_index[1])
+            
+            # Create mappings from global to local indices
+            send_mapping = {int(idx): i for i, idx in enumerate(unique_send)}
+            rec_mapping = {int(idx): i for i, idx in enumerate(unique_rec)}
+            
+            # Create local representations
+            local_send_rep = send_rep[unique_send]
+            local_rec_rep = rec_rep[unique_rec]
+            
             for start_idx in range(0, num_edges, sub_chunk_size):
                 memory_tracker.start_operation(f"sub_chunk_{start_idx}")
                 
                 end_idx = min(start_idx + sub_chunk_size, num_edges)
                 sub_edge_index = edge_index[:, start_idx:end_idx]
                 
-                # Get corresponding nodes for this sub-chunk
-                sub_send_nodes = sub_edge_index[0]
-                sub_rec_nodes = sub_edge_index[1]
+                # Map global indices to local indices
+                sub_send_nodes = torch.tensor([send_mapping[int(idx)] for idx in sub_edge_index[0]], 
+                                           device=sub_edge_index.device)
+                sub_rec_nodes = torch.tensor([rec_mapping[int(idx)] for idx in sub_edge_index[1]], 
+                                          device=sub_edge_index.device)
                 
-                # Extract features only for nodes in this sub-chunk
-                sub_send_rep = send_rep[sub_send_nodes]
-                sub_rec_rep = rec_rep[sub_rec_nodes]
+                # Extract features using local indices
+                sub_send_rep = local_send_rep[sub_send_nodes]
+                sub_rec_rep = local_rec_rep[sub_rec_nodes]
                 
                 # Handle edge representation
                 if edge_rep.dim() > 1:
@@ -417,26 +431,28 @@ class InteractionNet(pyg.nn.MessagePassing):
             
             # Aggregate messages in chunks
             memory_tracker.start_operation("aggregate_messages")
-            unique_receivers = torch.unique(edge_index[1])
-            num_receivers = len(unique_receivers)
             aggr_chunk_size = 10000  # Adjust based on available memory
             aggr_messages_list = []
             
-            for start_idx in range(0, num_receivers, aggr_chunk_size):
-                end_idx = min(start_idx + aggr_chunk_size, num_receivers)
-                receiver_subset = unique_receivers[start_idx:end_idx]
+            for start_idx in range(0, len(unique_rec), aggr_chunk_size):
+                end_idx = min(start_idx + aggr_chunk_size, len(unique_rec))
+                receiver_subset = unique_rec[start_idx:end_idx]
                 
                 # Get messages for these receivers
                 receiver_mask = torch.isin(edge_index[1], receiver_subset)
                 subset_features = edge_features[receiver_mask]
                 subset_edge_index = edge_index[:, receiver_mask]
                 
-                # Aggregate
-                subset_messages = self.aggregate(subset_features, subset_edge_index[1], dim=0)
+                # Map global indices to local for aggregation
+                local_edge_index = torch.tensor([rec_mapping[int(idx)] for idx in subset_edge_index[1]], 
+                                             device=subset_edge_index.device)
+                
+                # Aggregate using local indices
+                subset_messages = self.aggregate(subset_features, local_edge_index - start_idx, dim=0)
                 aggr_messages_list.append(subset_messages)
                 
                 # Clean up
-                del subset_features, subset_edge_index, receiver_mask
+                del subset_features, subset_edge_index, receiver_mask, local_edge_index
                 gc.collect()
             
             # Combine aggregated messages
