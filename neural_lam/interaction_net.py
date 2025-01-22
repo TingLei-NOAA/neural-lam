@@ -274,11 +274,10 @@ class InteractionNet(pyg.nn.MessagePassing):
             # Default to input dim if not explicitly given
             hidden_dim = input_dim
 
-        # Store edge indices as is, without modification
-        self.register_buffer("edge_index", edge_index, persistent=False)
-        # Store number of receiver and sender nodes
-        self.num_rec = edge_index[1].max().item() + 1
-        self.num_send = edge_index[0].max().item() + 1
+        # Store edge indices without modifying them
+        self.register_buffer("edge_index", edge_index.clone(), persistent=False)
+        # Store number of nodes according to edge_index
+        self.num_nodes = edge_index.max().item() + 1
 
         # Create MLPs
         edge_mlp_recipe = [3 * input_dim] + [hidden_dim] * (hidden_layers + 1)
@@ -326,16 +325,32 @@ class InteractionNet(pyg.nn.MessagePassing):
                 
                 chunk_end = min(i + chunk_size, num_nodes)
                 chunk_mask = (self.edge_index[1] >= i) & (self.edge_index[1] < chunk_end)
-                chunk_edge_index = self.edge_index[:, chunk_mask]
                 
-                # Log chunk sizes
-                memory_tracker.log_tensor("chunk_mask", chunk_mask)
-                memory_tracker.log_tensor("chunk_edge_index", chunk_edge_index)
+                # Only process chunk if it has edges
+                if chunk_mask.any():
+                    chunk_edge_index = self.edge_index[:, chunk_mask]
+                    chunk_edge_rep = edge_rep[chunk_mask] if edge_rep.dim() > 1 else edge_rep
+                    
+                    # Log chunk sizes
+                    memory_tracker.log_tensor("chunk_mask", chunk_mask)
+                    memory_tracker.log_tensor("chunk_edge_index", chunk_edge_index)
+                    
+                    # Process chunk
+                    chunk_out = self._forward_chunk(
+                        send_rep, 
+                        rec_rep[i:chunk_end], 
+                        chunk_edge_index,
+                        chunk_edge_rep
+                    )
+                else:
+                    # If no edges in chunk, create zero tensor with correct shape
+                    chunk_out = torch.zeros(
+                        (chunk_end - i, rec_rep.size(-1)), 
+                        dtype=rec_rep.dtype,
+                        device=rec_rep.device
+                    )
                 
-                # Process chunk
-                chunk_out = self._forward_chunk(send_rep, rec_rep[i:chunk_end], chunk_edge_index, edge_rep)
                 output_chunks.append(chunk_out)
-                
                 memory_tracker.end_operation()
             
             # Combine results
@@ -359,91 +374,32 @@ class InteractionNet(pyg.nn.MessagePassing):
             raise e
 
     def _forward_chunk(self, send_rep, rec_rep, edge_index, edge_rep):
-        """Process a single chunk of nodes with memory-efficient operations"""
+        """Process a single chunk of nodes"""
         memory_tracker.start_operation("forward_chunk")
         
         try:
-            # Log input sizes and shapes
+            # Log input sizes
             memory_tracker.log_tensor("chunk_send_rep", send_rep)
             memory_tracker.log_tensor("chunk_rec_rep", rec_rep)
             memory_tracker.log_tensor("chunk_edge_index", edge_index)
             memory_tracker.log_tensor("chunk_edge_rep", edge_rep)
             
-            print(f"Debug - Input shapes:")
-            print(f"send_rep: {send_rep.shape}")
-            print(f"rec_rep: {rec_rep.shape}")
-            print(f"edge_index: {edge_index.shape}")
-            print(f"edge_rep: {edge_rep.shape}")
-            
-            # Process in smaller sub-chunks
-            sub_chunk_size = 50000  # Adjust based on available memory
-            num_edges = edge_index.size(1)
-            edge_features_list = []
-            
-            # Ensure indices are within bounds
-            send_size = send_rep.size(0)
-            rec_size = rec_rep.size(0)
-            
-            # Mask for valid indices
-            valid_edges_mask = (edge_index[0] < send_size) & (edge_index[1] < rec_size)
-            edge_index = edge_index[:, valid_edges_mask]
-            if edge_rep.dim() > 1:
-                edge_rep = edge_rep[valid_edges_mask]
-            
-            # Update num_edges after filtering
-            num_edges = edge_index.size(1)
-            
-            for start_idx in range(0, num_edges, sub_chunk_size):
-                memory_tracker.start_operation(f"sub_chunk_{start_idx}")
-                
-                end_idx = min(start_idx + sub_chunk_size, num_edges)
-                sub_edge_index = edge_index[:, start_idx:end_idx]
-                
-                # Get corresponding nodes for this sub-chunk
-                sub_send_nodes = sub_edge_index[0]
-                sub_rec_nodes = sub_edge_index[1]
-                
-                # Extract features for nodes in this sub-chunk
-                sub_send_rep = send_rep[sub_send_nodes]
-                sub_rec_rep = rec_rep[sub_rec_nodes]
-                
-                # Handle edge representation
-                if edge_rep.dim() > 1:
-                    sub_edge_rep = edge_rep[start_idx:end_idx]
-                else:
-                    sub_edge_rep = edge_rep
-                
-                # Compute features for sub-chunk
-                with torch.no_grad():  # Temporarily disable grad to save memory
-                    sub_input = torch.cat((sub_edge_rep, sub_send_rep, sub_rec_rep), dim=-1)
-                    sub_features = self.edge_mlp(sub_input)
-                    edge_features_list.append(sub_features)
-                
-                # Clean up
-                del sub_input, sub_features, sub_send_rep, sub_rec_rep, sub_edge_rep
-                gc.collect()
-                memory_tracker.end_operation()
-            
-            if not edge_features_list:
-                print("Warning: No valid edges found after filtering")
-                # Return zero tensor with correct shape
-                return torch.zeros_like(rec_rep)
-            
-            # Combine features
-            memory_tracker.start_operation("combine_features")
-            edge_features = torch.cat(edge_features_list, dim=0)
-            del edge_features_list
-            gc.collect()
+            # Compute edge features
+            memory_tracker.start_operation("compute_edge_features")
+            edge_features = self.edge_mlp(torch.cat((edge_rep, send_rep[edge_index[0]], rec_rep[edge_index[1]]), dim=-1))
+            memory_tracker.log_tensor("edge_features", edge_features)
             memory_tracker.end_operation()
             
             # Aggregate messages
             memory_tracker.start_operation("aggregate_messages")
-            aggr_messages = self.aggregate(edge_features, edge_index[1], dim=0, size=rec_size)
+            aggr_messages = self.aggregate(edge_features, edge_index[1], dim=0, size=rec_rep.size(0))
+            memory_tracker.log_tensor("aggr_messages", aggr_messages)
             memory_tracker.end_operation()
             
-            # Final node update
-            memory_tracker.start_operation("node_update")
+            # Update node features
+            memory_tracker.start_operation("update_nodes")
             out = self.aggr_mlp(torch.cat((rec_rep, aggr_messages), dim=-1))
+            memory_tracker.log_tensor("output", out)
             memory_tracker.end_operation()
             
             memory_tracker.end_operation()
@@ -456,7 +412,6 @@ class InteractionNet(pyg.nn.MessagePassing):
             print(f"rec_rep: {rec_rep.shape}")
             print(f"edge_index: {edge_index.shape}")
             print(f"edge_rep: {edge_rep.shape}")
-            print(f"Edge index max values: {edge_index.max(dim=1)[0]}")
             memory_tracker.end_operation()
             raise e
 
@@ -505,7 +460,7 @@ class InteractionNet(pyg.nn.MessagePassing):
         
         cleanup_memory()  # Clean before aggregation
         
-        aggr = super().aggregate(inputs, index, ptr, self.num_rec)
+        aggr = super().aggregate(inputs, index, ptr, self.num_nodes)
         return aggr, inputs
 
 
