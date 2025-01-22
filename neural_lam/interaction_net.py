@@ -313,115 +313,30 @@ class InteractionNet(pyg.nn.MessagePassing):
         memory_tracker.log_tensor("rec_rep", rec_rep)
         memory_tracker.log_tensor("edge_rep", edge_rep)
         
-        # Ensure inputs are on CPU
-        send_rep = send_rep.cpu()
-        rec_rep = rec_rep.cpu()
-        edge_rep = edge_rep.cpu()
-        
-        try:
-            # Process in chunks to save memory
-            chunk_size = 500
-            num_nodes = rec_rep.size(0)
-            output_chunks = []
-            
-            for i in range(0, num_nodes, chunk_size):
-                memory_tracker.start_operation(f"chunk_processing_{i}")
-                
-                chunk_end = min(i + chunk_size, num_nodes)
-                chunk_mask = (self.edge_index[1] >= i) & (self.edge_index[1] < chunk_end)
-                
-                # Only process chunk if it has edges
-                if chunk_mask.any():
-                    chunk_edge_index = self.edge_index[:, chunk_mask]
-                    chunk_edge_rep = edge_rep[chunk_mask] if edge_rep.dim() > 1 else edge_rep
-                    
-                    # Log chunk sizes
-                    memory_tracker.log_tensor("chunk_mask", chunk_mask)
-                    memory_tracker.log_tensor("chunk_edge_index", chunk_edge_index)
-                    
-                    # Process chunk
-                    chunk_out = self._forward_chunk(
-                        send_rep, 
-                        rec_rep[i:chunk_end], 
-                        chunk_edge_index,
-                        chunk_edge_rep
-                    )
-                else:
-                    # If no edges in chunk, create zero tensor with correct shape
-                    chunk_out = torch.zeros(
-                        (chunk_end - i, rec_rep.size(-1)), 
-                        dtype=rec_rep.dtype,
-                        device=rec_rep.device
-                    )
-                
-                output_chunks.append(chunk_out)
-                memory_tracker.end_operation()
-            
-            # Combine results
-            memory_tracker.start_operation("combine_chunks")
-            rec_rep = torch.cat(output_chunks, dim=0)
-            memory_tracker.log_tensor("combined_output", rec_rep)
-            memory_tracker.end_operation()
-            
-            if self.update_edges:
-                memory_tracker.start_operation("update_edges")
-                edge_rep = edge_rep + self.edge_mlp(torch.cat((edge_rep, send_rep, rec_rep), dim=-1))
-                memory_tracker.log_tensor("updated_edge_rep", edge_rep)
-                memory_tracker.end_operation()
-                return rec_rep, edge_rep
-                
-            memory_tracker.end_operation()
-            return rec_rep
-            
-        except Exception as e:
-            memory_tracker.end_operation()
-            raise e
+        # Always concatenate to [rec_nodes, send_nodes] for propagation,
+        # but only aggregate to rec_nodes
+        node_reps = torch.cat((rec_rep, send_rep), dim=-2)
+        edge_rep_aggr, edge_diff = self.propagate(
+            self.edge_index, x=node_reps, edge_attr=edge_rep
+        )
+        rec_diff = self.aggr_mlp(torch.cat((rec_rep, edge_rep_aggr), dim=-1))
 
-    def _forward_chunk(self, send_rep, rec_rep, edge_index, edge_rep):
-        """Process a single chunk of nodes"""
-        memory_tracker.start_operation("forward_chunk")
-        
-        try:
-            # Log input sizes
-            memory_tracker.log_tensor("chunk_send_rep", send_rep)
-            memory_tracker.log_tensor("chunk_rec_rep", rec_rep)
-            memory_tracker.log_tensor("chunk_edge_index", edge_index)
-            memory_tracker.log_tensor("chunk_edge_rep", edge_rep)
-            
-            # Compute edge features
-            memory_tracker.start_operation("compute_edge_features")
-            edge_features = self.edge_mlp(torch.cat((edge_rep, send_rep[edge_index[0]], rec_rep[edge_index[1]]), dim=-1))
-            memory_tracker.log_tensor("edge_features", edge_features)
-            memory_tracker.end_operation()
-            
-            # Aggregate messages
-            memory_tracker.start_operation("aggregate_messages")
-            aggr_messages = self.aggregate(edge_features, edge_index[1], dim=0, size=rec_rep.size(0))
-            memory_tracker.log_tensor("aggr_messages", aggr_messages)
-            memory_tracker.end_operation()
-            
-            # Update node features
-            memory_tracker.start_operation("update_nodes")
-            out = self.aggr_mlp(torch.cat((rec_rep, aggr_messages), dim=-1))
-            memory_tracker.log_tensor("output", out)
-            memory_tracker.end_operation()
-            
-            memory_tracker.end_operation()
-            return out
-            
-        except Exception as e:
-            print(f"Error in _forward_chunk: {str(e)}")
-            print(f"Tensor shapes:")
-            print(f"send_rep: {send_rep.shape}")
-            print(f"rec_rep: {rec_rep.shape}")
-            print(f"edge_index: {edge_index.shape}")
-            print(f"edge_rep: {edge_rep.shape}")
-            memory_tracker.end_operation()
-            raise e
+        # Residual connections
+        rec_rep = rec_rep + rec_diff
 
-    def message(self, x_i, x_j, edge_attr):
-        """Compute messages from node j to node i."""
-        return edge_attr
+        if self.update_edges:
+            edge_rep = edge_rep + edge_diff
+            memory_tracker.end_operation()
+            return rec_rep, edge_rep
+
+        memory_tracker.end_operation()
+        return rec_rep
+
+    def message(self, x_j, x_i, edge_attr):
+        """
+        Compute messages from node j to node i.
+        """
+        return self.edge_mlp(torch.cat((edge_attr, x_j, x_i), dim=-1))
 
     def aggregate(self, inputs, index, ptr, dim_size):
         """
