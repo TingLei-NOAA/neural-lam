@@ -83,8 +83,8 @@ def main(input_args=None):
     parser.add_argument(
         "--n_workers",
         type=int,
-        default=8,  # Increased from 4 to 8 for better data loading
-        help="Number of workers in data loader (default: 8)",
+        default=4,  # Original number of workers
+        help="Number of workers in data loader (default: 4)",
     )
     parser.add_argument(
         "--epochs",
@@ -95,8 +95,8 @@ def main(input_args=None):
     parser.add_argument(
         "--batch_size", 
         type=int, 
-        default=16,  # Increased from 4 to 16 for better throughput
-        help="batch size (default: 16)"
+        default=4,  # Original default batch size
+        help="batch size (default: 4)"
     )
     parser.add_argument(
         "--load",

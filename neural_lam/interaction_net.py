@@ -210,10 +210,9 @@ class InteractionNet(pyg.nn.MessagePassing):
                 )
 
             self.update_edges = update_edges
-
+        
     def forward(self, send_rep, rec_rep, edge_rep):
-        """
-        Apply interaction network to update the representations of receiver
+        """Apply interaction network to update the representations of receiver
         nodes, and optionally the edge representations.
 
         send_rep: (N_send, d_h), vector representations of sender nodes
