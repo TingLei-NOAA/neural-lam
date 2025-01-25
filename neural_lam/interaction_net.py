@@ -8,65 +8,13 @@ import os
 import gc
 import time
 
+# Simplified memory monitoring function
 def check_system_memory(location=""):
-    """Check system and process memory usage"""
-    mem = psutil.virtual_memory()
-    print(f"\nMemory Check at {location}:")
-    print(f"Total system memory: {mem.total / (1024**3):.2f} GB")
-    print(f"Available memory: {mem.available / (1024**3):.2f} GB")
-    print(f"Used memory: {mem.used / (1024**3):.2f} GB")
-    
-    # Get process memory info
-    process = psutil.Process()
-    print(f"Process memory usage: {process.memory_info().rss / (1024**3):.2f} GB")
-    
-    try:
-        soft, hard = resource.getrlimit(resource.RLIMIT_AS)
-        print(f"Process memory limits - Soft: {'unlimited' if soft == -1 else f'{soft/(1024**3):.2f} GB'}, "
-              f"Hard: {'unlimited' if hard == -1 else f'{hard/(1024**3):.2f} GB'}")
-    except Exception as e:
-        print(f"Could not get process limits: {e}")
-
-def check_memory_fragmentation():
-    """Check memory fragmentation status"""
-    gc.collect()
-    
-    # Get memory maps
-    maps_file = f"/proc/{os.getpid()}/maps"
-    if os.path.exists(maps_file):
-        with open(maps_file, 'r') as f:
-            memory_maps = f.readlines()
-            
-        # Analyze contiguous regions
-        regions = []
-        for line in memory_maps:
-            if 'heap' in line or 'anon' in line:
-                addr_range = line.split()[0]
-                start, end = [int(x, 16) for x in addr_range.split('-')]
-                regions.append(end - start)
-                
-        if regions:
-            largest_block = max(regions)
-            print(f"Largest contiguous memory block: {largest_block / (1024**2):.2f} MB")
-
-def defragment_memory():
-    """Attempt to defragment memory by forcing allocation and deallocation"""
-    gc.collect()
-    
-    # Get current memory usage
-    process = psutil.Process()
-    current_mem = process.memory_info().rss
-    
-    # Allocate and immediately free a large block to consolidate memory
-    try:
-        temp = torch.empty(int(current_mem * 1.2), dtype=torch.uint8)
-        del temp
-    except:
-        pass
-    
-    gc.collect()
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
+    """Check system and process memory usage - simplified version"""
+    if os.getenv("DEBUG_MEMORY"):  # Only run when debugging
+        process = psutil.Process()
+        mem = psutil.virtual_memory()
+        print(f"\nMemory at {location}: Process: {process.memory_info().rss / (1024**3):.2f}GB, Available: {mem.available / (1024**3):.2f}GB")
 
 def cleanup_memory():
     """Clean up memory aggressively"""
@@ -82,48 +30,6 @@ def cleanup_memory():
     # Try to release memory back to OS
     if hasattr(torch.cuda, 'empty_cache'):
         torch.cuda.empty_cache()
-
-def log_memory_usage(location=""):
-    """Log current memory usage with detailed statistics"""
-    process = psutil.Process()
-    
-    # Get memory info
-    process_memory = process.memory_info()
-    system_memory = psutil.virtual_memory()
-    
-    # Calculate memory usage
-    used_gb = process_memory.rss / (1024 * 1024 * 1024)
-    total_gb = system_memory.total / (1024 * 1024 * 1024)
-    available_gb = system_memory.available / (1024 * 1024 * 1024)
-    
-    print(f"\nMemory Usage at {location}:")
-    print(f"Process RSS: {used_gb:.2f} GB")
-    print(f"System Total: {total_gb:.2f} GB")
-    print(f"System Available: {available_gb:.2f} GB")
-    print(f"System Used %: {system_memory.percent}%")
-    
-    # Get tensor memory stats if using PyTorch
-    if torch.cuda.is_available():
-        print(f"CUDA Memory: {torch.cuda.memory_allocated() / 1024**3:.2f} GB")
-    
-    # Get detailed process memory
-    print(f"\nDetailed Process Memory:")
-    print(f"Virtual Memory: {process_memory.vms / (1024**3):.2f} GB")
-    print(f"Shared Memory: {process_memory.shared / (1024**3):.2f} GB")
-    print(f"Text Memory: {process_memory.text / (1024**3):.2f} GB")
-    print(f"Data Memory: {process_memory.data / (1024**3):.2f} GB")
-    
-    # Get number of open file descriptors
-    print(f"Open Files: {len(process.open_files())}")
-    
-    # Log PyTorch tensors if debug mode
-    if os.getenv("DEBUG_MEMORY"):
-        for obj in gc.get_objects():
-            try:
-                if torch.is_tensor(obj):
-                    print(f"Found tensor: {obj.size()}, {obj.element_size() * obj.nelement() / 1024**3:.2f} GB")
-            except:
-                pass
 
 class MemoryTracker:
     """Track detailed memory usage during operations"""
@@ -268,7 +174,7 @@ class InteractionNet(pyg.nn.MessagePassing):
             aggr: Message aggregation method (sum/mean)
             """
             assert aggr in ("sum", "mean"), f"Unknown aggregation method: {aggr}"
-            super().__init__(aggr=aggr)
+            super().__init__(aggr=aggr, flow="source_to_target")
 
             if hidden_dim is None:
                 # Default to input dim if not explicitly given
@@ -306,31 +212,60 @@ class InteractionNet(pyg.nn.MessagePassing):
             self.update_edges = update_edges
 
     def forward(self, send_rep, rec_rep, edge_rep):
+        """
+        Apply interaction network to update the representations of receiver
+        nodes, and optionally the edge representations.
+
+        send_rep: (N_send, d_h), vector representations of sender nodes
+        rec_rep: (N_rec, d_h), vector representations of receiver nodes
+        edge_rep: (M, d_h), vector representations of edges used
+
+        Returns:
+        rec_rep: (N_rec, d_h), updated vector representations of receiver nodes
+        (optionally) edge_rep: (M, d_h), updated vector representations
+            of edges
+        """
         memory_tracker.start_operation("forward_pass")
         
-        # Log input tensor sizes
-        memory_tracker.log_tensor("send_rep", send_rep)
-        memory_tracker.log_tensor("rec_rep", rec_rep)
-        memory_tracker.log_tensor("edge_rep", edge_rep)
-        
-        # Always concatenate to [rec_nodes, send_nodes] for propagation,
-        # but only aggregate to rec_nodes
-        node_reps = torch.cat((rec_rep, send_rep), dim=-2)
-        edge_rep_aggr, edge_diff = self.propagate(
-            self.edge_index, x=node_reps, edge_attr=edge_rep
-        )
-        rec_diff = self.aggr_mlp(torch.cat((rec_rep, edge_rep_aggr), dim=-1))
+        try:
+            # Log input tensor sizes
+            memory_tracker.log_tensor("send_rep", send_rep)
+            memory_tracker.log_tensor("rec_rep", rec_rep)
+            memory_tracker.log_tensor("edge_rep", edge_rep)
+            
+            # Always concatenate to [rec_nodes, send_nodes] for propagation,
+            # but only aggregate to rec_nodes
+            node_reps = torch.cat((rec_rep, send_rep), dim=-2)
+            
+            # Use memory efficient propagation
+            edge_rep_aggr = self.propagate(
+                self.edge_index,
+                x=node_reps,
+                edge_attr=edge_rep,
+                size=(node_reps.size(-2), self.num_rec)
+            )
+            
+            # Update node features
+            rec_diff = self.aggr_mlp(torch.cat((rec_rep, edge_rep_aggr), dim=-1))
+            rec_rep = rec_rep + rec_diff
 
-        # Residual connections
-        rec_rep = rec_rep + rec_diff
+            if self.update_edges:
+                # Update edge features
+                edge_diff = self.edge_mlp(torch.cat((
+                    edge_rep,
+                    node_reps[self.edge_index[0]],
+                    node_reps[self.edge_index[1]]
+                ), dim=-1))
+                edge_rep = edge_rep + edge_diff
+                memory_tracker.end_operation()
+                return rec_rep, edge_rep
 
-        if self.update_edges:
-            edge_rep = edge_rep + edge_diff
             memory_tracker.end_operation()
-            return rec_rep, edge_rep
-
-        memory_tracker.end_operation()
-        return rec_rep
+            return rec_rep
+            
+        except Exception as e:
+            memory_tracker.end_operation()
+            raise e
 
     def message(self, x_j, x_i, edge_attr):
         """
@@ -338,17 +273,12 @@ class InteractionNet(pyg.nn.MessagePassing):
         """
         return self.edge_mlp(torch.cat((edge_attr, x_j, x_i), dim=-1))
 
-    def aggregate(self, inputs, index, ptr, dim_size):
+    def aggregate(self, inputs, index, ptr=None, dim_size=None):
         """
-        Overridden aggregation function to:
-        * return both aggregated and original messages,
-        * only aggregate to number of receiver nodes.
+        Aggregate messages to receiver nodes.
         """
-        
         cleanup_memory()  # Clean before aggregation
-        
-        aggr = super().aggregate(inputs, index, ptr, self.num_rec)
-        return aggr, inputs
+        return super().aggregate(inputs, index, ptr=ptr, dim_size=self.num_rec)
 
 
 class SplitMLPs(nn.Module):

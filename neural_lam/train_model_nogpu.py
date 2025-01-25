@@ -18,10 +18,9 @@ from .models import GraphLAM, HiLAM, HiLAMParallel
 
 
 def print_memory_usage(prefix=""):
-    import psutil
-    import os
-    process = psutil.Process(os.getpid())
-    print(f"{prefix} Memory usage: {process.memory_info().rss / 1024 / 1024:.2f} MB")
+    if os.getenv("DEBUG_MEMORY"):  # Only run when debugging
+        process = psutil.Process(os.getpid())
+        print(f"{prefix} Memory usage: {process.memory_info().rss / 1024 / 1024:.2f} MB")
 
 
 def check_system_memory(location=""):
@@ -84,8 +83,8 @@ def main(input_args=None):
     parser.add_argument(
         "--n_workers",
         type=int,
-        default=4,
-        help="Number of workers in data loader (default: 4)",
+        default=8,  # Increased from 4 to 8 for better data loading
+        help="Number of workers in data loader (default: 8)",
     )
     parser.add_argument(
         "--epochs",
@@ -94,7 +93,10 @@ def main(input_args=None):
         help="upper epoch limit (default: 200)",
     )
     parser.add_argument(
-        "--batch_size", type=int, default=4, help="batch size (default: 4)"
+        "--batch_size", 
+        type=int, 
+        default=16,  # Increased from 4 to 16 for better throughput
+        help="batch size (default: 16)"
     )
     parser.add_argument(
         "--load",
@@ -191,9 +193,9 @@ def main(input_args=None):
     parser.add_argument(
         "--val_interval",
         type=int,
-        default=1,
+        default=5,  # Increased from 1 to 5 to reduce validation overhead
         help="Number of epochs training between each validation run "
-        "(default: 1)",
+        "(default: 5)",
     )
 
     # Evaluation options
