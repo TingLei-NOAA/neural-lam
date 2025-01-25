@@ -369,7 +369,6 @@ def main(input_args=None):
         log_every_n_steps=1,
         accumulate_grad_batches=2,
         gradient_clip_val=1.0,
-        replace_sampler_ddp=False,  # We're manually handling the samplers
     )
 
     # Only init once, on rank 0 only

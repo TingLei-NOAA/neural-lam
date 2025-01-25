@@ -351,12 +351,9 @@ def main(input_args=None):
         callbacks=[checkpoint_callback],
         check_val_every_n_epoch=args.val_interval,
         precision=args.precision,
-        detect_anomaly=True,  # for detecting NaN and infinity
-        enable_model_summary=True,
-        profiler=pl.profilers.AdvancedProfiler(
-           dirpath=".",
-           filename="profile_output"
-),
+        profiler="advanced",
+        accumulate_grad_batches=2,
+        gradient_clip_val=1.0,
     )
 
     print_memory_usage("thinkdeb0 after loader")
