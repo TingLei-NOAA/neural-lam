@@ -225,8 +225,7 @@ def main(input_args=None):
         g = mk_2d_graph(xy, n, n)
         if args.plot:
             plot_graph(from_networkx(g), title=f"Mesh graph, level {lev}")
-#clt            plt.show()
-            plt.savefig("tlei_mesh-5.png")
+            plt.show()
 
         G.append(g)
 
@@ -307,13 +306,11 @@ def main(input_args=None):
                 plot_graph(
                     pyg_down, title=f"Down graph, {from_level} -> {to_level}"
                 )
-#cltorg                plt.show()
-                plt.savefig("tlei_mesh-0.png")
+                plt.show()
                 plot_graph(
                     pyg_down, title=f"Up graph, {to_level} -> {from_level}"
                 )
-#clt                plt.show()
-                plt.savefig("tlei_mesh-1.png")
+                plt.show()
 
         # Save up and down edges
         save_edges_list(up_graphs, "mesh_up", graph_dir_path)
@@ -372,8 +369,7 @@ def main(input_args=None):
 
         if args.plot:
             plot_graph(pyg_m2m, title="Mesh-to-mesh")
-#clt            plt.show()
-            plt.savefig("tlei_mesh-2.png")
+            plt.show()
 
     # Save m2m edges
     save_edges_list(m2m_graphs, "m2m", graph_dir_path)
@@ -454,8 +450,7 @@ def main(input_args=None):
 
     if args.plot:
         plot_graph(pyg_g2m, title="Grid-to-mesh")
-#        plt.show()
-        plt.savefig("tlei_mesh-3.png")
+        plt.show()
 
     #
     # Mesh2Grid
@@ -494,8 +489,7 @@ def main(input_args=None):
 
     if args.plot:
         plot_graph(pyg_m2g, title="Mesh-to-grid")
-#clt        plt.show()
-        plt.savefig("tlei_mesh-4.png")
+        plt.show()
 
     # Save g2m and m2g everything
     # g2m

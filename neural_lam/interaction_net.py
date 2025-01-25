@@ -8,9 +8,13 @@ from . import utils
 
 
 class InteractionNet(pyg.nn.MessagePassing):
-    """Implementation of a generic Interaction Network,
+    """
+    Implementation of a generic Interaction Network,
     from Battaglia et al. (2016)
     """
+
+    # pylint: disable=arguments-differ
+    # Disable to override args/kwargs from superclass
 
     def __init__(
         self,
@@ -23,8 +27,26 @@ class InteractionNet(pyg.nn.MessagePassing):
         aggr_chunk_sizes=None,
         aggr="sum",
     ):
+        """
+        Create a new InteractionNet
+
+        edge_index: (2,M), Edges in pyg format
+        input_dim: Dimensionality of input representations,
+            for both nodes and edges
+        update_edges: If new edge representations should be computed
+            and returned
+        hidden_layers: Number of hidden layers in MLPs
+        hidden_dim: Dimensionality of hidden layers, if None then same
+            as input_dim
+        edge_chunk_sizes: List of chunks sizes to split edge representation
+            into and use separate MLPs for (None = no chunking, same MLP)
+        aggr_chunk_sizes: List of chunks sizes to split aggregated node
+            representation into and use separate MLPs for
+            (None = no chunking, same MLP)
+        aggr: Message aggregation method (sum/mean)
+        """
         assert aggr in ("sum", "mean"), f"Unknown aggregation method: {aggr}"
-        super().__init__(aggr=aggr, flow="source_to_target")
+        super().__init__(aggr=aggr)
 
         if hidden_dim is None:
             # Default to input dim if not explicitly given
@@ -62,7 +84,8 @@ class InteractionNet(pyg.nn.MessagePassing):
         self.update_edges = update_edges
 
     def forward(self, send_rep, rec_rep, edge_rep):
-        """Apply interaction network to update the representations of receiver
+        """
+        Apply interaction network to update the representations of receiver
         nodes, and optionally the edge representations.
 
         send_rep: (N_send, d_h), vector representations of sender nodes
@@ -77,13 +100,8 @@ class InteractionNet(pyg.nn.MessagePassing):
         # Always concatenate to [rec_nodes, send_nodes] for propagation,
         # but only aggregate to rec_nodes
         node_reps = torch.cat((rec_rep, send_rep), dim=-2)
-
-        # Use memory efficient propagation
-        edge_rep_aggr = self.propagate(
-            self.edge_index,
-            x=node_reps,
-            edge_attr=edge_rep,
-            size=(node_reps.size(-2), self.num_rec)
+        edge_rep_aggr, edge_diff = self.propagate(
+            self.edge_index, x=node_reps, edge_attr=edge_rep
         )
 
         # Free memory
@@ -92,6 +110,8 @@ class InteractionNet(pyg.nn.MessagePassing):
 
         # Update node features
         rec_diff = self.aggr_mlp(torch.cat((rec_rep, edge_rep_aggr), dim=-1))
+
+        # Residual connections
         rec_rep = rec_rep + rec_diff
 
         if self.update_edges:
@@ -130,15 +150,20 @@ class InteractionNet(pyg.nn.MessagePassing):
         """
         return self.edge_mlp(torch.cat((edge_attr, x_j, x_i), dim=-1))
 
-    def aggregate(self, inputs, index, ptr=None, dim_size=None):
+    # pylint: disable-next=signature-differs
+    def aggregate(self, inputs, index, ptr, dim_size):
         """
-        Aggregate messages to receiver nodes.
+        Overridden aggregation function to:
+        * return both aggregated and original messages,
+        * only aggregate to number of receiver nodes.
         """
-        return super().aggregate(inputs, index, ptr=ptr, dim_size=self.num_rec)
+        aggr = super().aggregate(inputs, index, ptr, self.num_rec)
+        return aggr, inputs
 
 
 class SplitMLPs(nn.Module):
-    """Module that feeds chunks of input through different MLPs.
+    """
+    Module that feeds chunks of input through different MLPs.
     Split up input along dim -2 using given chunk sizes and feeds
     each chunk through separate MLPs.
     """
@@ -161,9 +186,8 @@ class SplitMLPs(nn.Module):
         Returns:
         joined_output: (..., N, d), concatenated results from the MLPs
         """
-        # Split input into chunks
-        chunks = x.split(self.chunk_sizes, dim=-2)
-        # Apply MLPs
-        outputs = [mlp(chunk) for mlp, chunk in zip(self.mlps, chunks)]
-        # Join outputs
-        return torch.cat(outputs, dim=-2)
+        chunks = torch.split(x, self.chunk_sizes, dim=-2)
+        chunk_outputs = [
+            mlp(chunk_input) for mlp, chunk_input in zip(self.mlps, chunks)
+        ]
+        return torch.cat(chunk_outputs, dim=-2)
