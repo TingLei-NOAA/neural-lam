@@ -86,20 +86,42 @@ class InteractionNet(pyg.nn.MessagePassing):
             size=(node_reps.size(-2), self.num_rec)
         )
 
+        # Free memory
+        del node_reps
+        torch.cuda.empty_cache()
+
         # Update node features
         rec_diff = self.aggr_mlp(torch.cat((rec_rep, edge_rep_aggr), dim=-1))
         rec_rep = rec_rep + rec_diff
 
         if self.update_edges:
-            # Update edge features
-            edge_diff = self.edge_mlp(torch.cat((
-                edge_rep,
-                node_reps[self.edge_index[0]],
-                node_reps[self.edge_index[1]]
-            ), dim=-1))
-            edge_rep = edge_rep + edge_diff
+            # Update edge features - do this in chunks to save memory
+            chunk_size = 100000  # Adjust this based on available memory
+            num_edges = edge_rep.size(0)
+            edge_chunks = []
+            
+            for i in range(0, num_edges, chunk_size):
+                end_idx = min(i + chunk_size, num_edges)
+                chunk_idx = slice(i, end_idx)
+                
+                # Process edge updates in chunks
+                edge_inputs = torch.cat((
+                    edge_rep[chunk_idx],
+                    send_rep[self.edge_index[0][chunk_idx]],
+                    rec_rep[self.edge_index[1][chunk_idx]]
+                ), dim=-1)
+                
+                edge_diff_chunk = self.edge_mlp(edge_inputs)
+                edge_chunks.append(edge_rep[chunk_idx] + edge_diff_chunk)
+                
+                # Free memory after each chunk
+                del edge_inputs, edge_diff_chunk
+                torch.cuda.empty_cache()
+            
+            # Combine chunks
+            edge_rep = torch.cat(edge_chunks, dim=0)
             return rec_rep, edge_rep
-
+            
         return rec_rep
 
     def message(self, x_j, x_i, edge_attr):
