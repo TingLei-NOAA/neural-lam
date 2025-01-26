@@ -116,8 +116,13 @@ class InteractionNet(pyg.nn.MessagePassing):
 
         if self.update_edges:
             # Update edge features - do this in chunks to save memory
-            chunk_size = 100000  # Adjust this based on available memory
-            num_edges = edge_rep.size(0)
+            # Adjust chunk size based on batch size to avoid index out of bounds
+            batch_size = send_rep.size(0) if send_rep.dim() > 2 else 1
+            base_chunk_size = 100000
+            chunk_size = base_chunk_size // batch_size  # Scale chunk size by batch size
+            chunk_size = max(1, chunk_size)  # Ensure chunk size is at least 1
+            
+            num_edges = edge_rep.size(-2)  # Use -2 to work with batched data
             edge_chunks = []
             
             for i in range(0, num_edges, chunk_size):
@@ -125,21 +130,28 @@ class InteractionNet(pyg.nn.MessagePassing):
                 chunk_idx = slice(i, end_idx)
                 
                 # Process edge updates in chunks
-                edge_inputs = torch.cat((
-                    edge_rep[chunk_idx],
-                    send_rep[self.edge_index[0][chunk_idx]],
-                    rec_rep[self.edge_index[1][chunk_idx]]
-                ), dim=-1)
+                if send_rep.dim() > 2:  # Batched data
+                    edge_inputs = torch.cat((
+                        edge_rep[..., chunk_idx, :],
+                        send_rep.index_select(-2, self.edge_index[0][chunk_idx]),
+                        rec_rep.index_select(-2, self.edge_index[1][chunk_idx])
+                    ), dim=-1)
+                else:  # Unbatched data
+                    edge_inputs = torch.cat((
+                        edge_rep[chunk_idx],
+                        send_rep[self.edge_index[0][chunk_idx]],
+                        rec_rep[self.edge_index[1][chunk_idx]]
+                    ), dim=-1)
                 
                 edge_diff_chunk = self.edge_mlp(edge_inputs)
-                edge_chunks.append(edge_rep[chunk_idx] + edge_diff_chunk)
+                edge_chunks.append(edge_rep[..., chunk_idx, :] + edge_diff_chunk if send_rep.dim() > 2 else edge_rep[chunk_idx] + edge_diff_chunk)
                 
                 # Free memory after each chunk
                 del edge_inputs, edge_diff_chunk
                 torch.cuda.empty_cache()
             
             # Combine chunks
-            edge_rep = torch.cat(edge_chunks, dim=0)
+            edge_rep = torch.cat(edge_chunks, dim=-2)
             return rec_rep, edge_rep
             
         return rec_rep
