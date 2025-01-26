@@ -100,8 +100,13 @@ class InteractionNet(pyg.nn.MessagePassing):
         # Always concatenate to [rec_nodes, send_nodes] for propagation,
         # but only aggregate to rec_nodes
         node_reps = torch.cat((rec_rep, send_rep), dim=-2)
+        
+        # Get aggregated messages and edge differences
         edge_rep_aggr, edge_diff = self.propagate(
-            self.edge_index, x=node_reps, edge_attr=edge_rep
+            self.edge_index,
+            x=node_reps,
+            edge_attr=edge_rep,
+            size=(node_reps.size(-2), self.num_rec)
         )
 
         # Free memory
@@ -110,50 +115,29 @@ class InteractionNet(pyg.nn.MessagePassing):
 
         # Update node features
         rec_diff = self.aggr_mlp(torch.cat((rec_rep, edge_rep_aggr), dim=-1))
-
-        # Residual connections
         rec_rep = rec_rep + rec_diff
 
         if self.update_edges:
-            # Update edge features - do this in chunks to save memory
-            # Adjust chunk size based on batch size to avoid index out of bounds
-            batch_size = send_rep.size(0) if send_rep.dim() > 2 else 1
-            base_chunk_size = 100000
-            chunk_size = base_chunk_size // batch_size  # Scale chunk size by batch size
-            chunk_size = max(1, chunk_size)  # Ensure chunk size is at least 1
-            
-            num_edges = edge_rep.size(-2)  # Use -2 to work with batched data
+            # Process edges in chunks to save memory
             edge_chunks = []
+            chunk_size = min(50000, edge_rep.size(-2))  # Smaller chunk size
             
-            for i in range(0, num_edges, chunk_size):
-                end_idx = min(i + chunk_size, num_edges)
-                chunk_idx = slice(i, end_idx)
+            for start_idx in range(0, edge_rep.size(-2), chunk_size):
+                end_idx = min(start_idx + chunk_size, edge_rep.size(-2))
+                chunk_mask = slice(start_idx, end_idx)
                 
-                # Process edge updates in chunks
-                if send_rep.dim() > 2:  # Batched data
-                    edge_inputs = torch.cat((
-                        edge_rep[..., chunk_idx, :],
-                        send_rep.index_select(-2, self.edge_index[0][chunk_idx]),
-                        rec_rep.index_select(-2, self.edge_index[1][chunk_idx])
-                    ), dim=-1)
-                else:  # Unbatched data
-                    edge_inputs = torch.cat((
-                        edge_rep[chunk_idx],
-                        send_rep[self.edge_index[0][chunk_idx]],
-                        rec_rep[self.edge_index[1][chunk_idx]]
-                    ), dim=-1)
+                # Get edge differences for this chunk
+                edge_chunk = edge_rep[..., chunk_mask, :] + edge_diff[..., chunk_mask, :]
+                edge_chunks.append(edge_chunk)
                 
-                edge_diff_chunk = self.edge_mlp(edge_inputs)
-                edge_chunks.append(edge_rep[..., chunk_idx, :] + edge_diff_chunk if send_rep.dim() > 2 else edge_rep[chunk_idx] + edge_diff_chunk)
-                
-                # Free memory after each chunk
-                del edge_inputs, edge_diff_chunk
+                # Clean up
+                del edge_chunk
                 torch.cuda.empty_cache()
             
             # Combine chunks
             edge_rep = torch.cat(edge_chunks, dim=-2)
             return rec_rep, edge_rep
-            
+
         return rec_rep
 
     def message(self, x_j, x_i, edge_attr):
@@ -163,13 +147,13 @@ class InteractionNet(pyg.nn.MessagePassing):
         return self.edge_mlp(torch.cat((edge_attr, x_j, x_i), dim=-1))
 
     # pylint: disable-next=signature-differs
-    def aggregate(self, inputs, index, ptr, dim_size):
+    def aggregate(self, inputs, index, ptr=None, dim_size=None):
         """
         Overridden aggregation function to:
         * return both aggregated and original messages,
         * only aggregate to number of receiver nodes.
         """
-        aggr = super().aggregate(inputs, index, ptr, self.num_rec)
+        aggr = super().aggregate(inputs, index, ptr=ptr, dim_size=self.num_rec)
         return aggr, inputs
 
 
