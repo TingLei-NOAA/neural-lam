@@ -82,8 +82,7 @@ class InteractionNet(pyg.nn.MessagePassing):
         edge_rep_aggr, edge_diff = self.propagate(
             self.edge_index,
             x=node_reps,
-            edge_attr=edge_rep,
-            size=(node_reps.size(-2), self.num_rec)
+            edge_attr=edge_rep
         )
 
         # Free memory we don't need anymore
