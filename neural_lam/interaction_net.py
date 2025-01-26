@@ -8,13 +8,9 @@ from . import utils
 
 
 class InteractionNet(pyg.nn.MessagePassing):
-    """
-    Implementation of a generic Interaction Network,
+    """Implementation of a generic Interaction Network,
     from Battaglia et al. (2016)
     """
-
-    # pylint: disable=arguments-differ
-    # Disable to override args/kwargs from superclass
 
     def __init__(
         self,
@@ -27,24 +23,6 @@ class InteractionNet(pyg.nn.MessagePassing):
         aggr_chunk_sizes=None,
         aggr="sum",
     ):
-        """
-        Create a new InteractionNet
-
-        edge_index: (2,M), Edges in pyg format
-        input_dim: Dimensionality of input representations,
-            for both nodes and edges
-        update_edges: If new edge representations should be computed
-            and returned
-        hidden_layers: Number of hidden layers in MLPs
-        hidden_dim: Dimensionality of hidden layers, if None then same
-            as input_dim
-        edge_chunk_sizes: List of chunks sizes to split edge representation
-            into and use separate MLPs for (None = no chunking, same MLP)
-        aggr_chunk_sizes: List of chunks sizes to split aggregated node
-            representation into and use separate MLPs for
-            (None = no chunking, same MLP)
-        aggr: Message aggregation method (sum/mean)
-        """
         assert aggr in ("sum", "mean"), f"Unknown aggregation method: {aggr}"
         super().__init__(aggr=aggr)
 
@@ -84,8 +62,7 @@ class InteractionNet(pyg.nn.MessagePassing):
         self.update_edges = update_edges
 
     def forward(self, send_rep, rec_rep, edge_rep):
-        """
-        Apply interaction network to update the representations of receiver
+        """Apply interaction network to update the representations of receiver
         nodes, and optionally the edge representations.
 
         send_rep: (N_send, d_h), vector representations of sender nodes
@@ -100,8 +77,8 @@ class InteractionNet(pyg.nn.MessagePassing):
         # Always concatenate to [rec_nodes, send_nodes] for propagation,
         # but only aggregate to rec_nodes
         node_reps = torch.cat((rec_rep, send_rep), dim=-2)
-        
-        # Get aggregated messages and edge differences
+
+        # Get messages and aggregated results
         edge_rep_aggr, edge_diff = self.propagate(
             self.edge_index,
             x=node_reps,
@@ -109,7 +86,7 @@ class InteractionNet(pyg.nn.MessagePassing):
             size=(node_reps.size(-2), self.num_rec)
         )
 
-        # Free memory
+        # Free memory we don't need anymore
         del node_reps
         torch.cuda.empty_cache()
 
@@ -117,44 +94,24 @@ class InteractionNet(pyg.nn.MessagePassing):
         rec_diff = self.aggr_mlp(torch.cat((rec_rep, edge_rep_aggr), dim=-1))
         rec_rep = rec_rep + rec_diff
 
+        # Free more memory
+        del edge_rep_aggr, rec_diff
+        torch.cuda.empty_cache()
+
         if self.update_edges:
-            # Process edges in chunks to save memory
-            edge_chunks = []
-            chunk_size = min(50000, edge_rep.size(-2))  # Smaller chunk size
-            
-            for start_idx in range(0, edge_rep.size(-2), chunk_size):
-                end_idx = min(start_idx + chunk_size, edge_rep.size(-2))
-                chunk_mask = slice(start_idx, end_idx)
-                
-                # Get edge differences for this chunk
-                edge_chunk = edge_rep[..., chunk_mask, :] + edge_diff[..., chunk_mask, :]
-                edge_chunks.append(edge_chunk)
-                
-                # Clean up
-                del edge_chunk
-                torch.cuda.empty_cache()
-            
-            # Combine chunks
-            edge_rep = torch.cat(edge_chunks, dim=-2)
+            # Update edge features
+            edge_rep = edge_rep + edge_diff
             return rec_rep, edge_rep
 
         return rec_rep
 
     def message(self, x_j, x_i, edge_attr):
-        """
-        Compute messages from node j to node i.
-        """
+        """Compute messages from node j to node i."""
         return self.edge_mlp(torch.cat((edge_attr, x_j, x_i), dim=-1))
 
-    # pylint: disable-next=signature-differs
     def aggregate(self, inputs, index, ptr=None, dim_size=None):
-        """
-        Overridden aggregation function to:
-        * return both aggregated and original messages,
-        * only aggregate to number of receiver nodes.
-        """
-        aggr = super().aggregate(inputs, index, ptr=ptr, dim_size=self.num_rec)
-        return aggr, inputs
+        """Aggregate messages to receiver nodes."""
+        return super().aggregate(inputs, index, ptr=ptr, dim_size=self.num_rec), inputs
 
 
 class SplitMLPs(nn.Module):
