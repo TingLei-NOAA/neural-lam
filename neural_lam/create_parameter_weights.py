@@ -36,7 +36,7 @@ class PaddedWeatherDataset(torch.utils.data.Dataset):
             if idx >= self.total_samples
             else idx % len(self.base_dataset)
         ]
-        print(f"Sample {idx} has shape: {sample.shape}")
+        return sample
 #clt        return self.base_dataset[
 #clt            self.original_indices[-1]
 #clt            if idx >= self.total_samples

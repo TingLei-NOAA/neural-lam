@@ -259,7 +259,7 @@ def main(input_args=None):
     )
 
     # Instantiate model + trainer
-    if torch.cuda.is_available() and 0 > 2: #cltthinkdeb
+    if torch.cuda.is_available() : 
         device_name = "cuda"
         torch.set_float32_matmul_precision(
             "high"
@@ -267,7 +267,7 @@ def main(input_args=None):
     else:
         device_name = "cpu"
 
-    device_name = "cpu" #cltthinkdeb 
+#cltdebug    device_name = "cpu" #cltthinkdeb 
     # Load model parameters Use new args for model
     model_class = MODELS[args.model]
     model = model_class(args)
@@ -290,6 +290,39 @@ def main(input_args=None):
     logger = pl.loggers.WandbLogger(
         project=args.wandb_project, name=run_name, config=args
     )
+ #from pytorch_lightning.callbacks import Callback
+#maybe can also use TensorBoardLogger
+    class LossTracker(pl.callbacks.Callback):
+        def __init__(self):
+            super().__init__()
+            self.train_losses = []
+            self.val_losses = []
+            self.epochs = []
+            
+        def on_train_epoch_end(self, trainer, pl_module):
+            # Get the current epoch number and loss
+            epoch = trainer.current_epoch
+            train_loss = trainer.callback_metrics.get('train_loss')
+            if isinstance(train_loss, torch.Tensor):
+                train_loss = train_loss.item()
+                
+            self.epochs.append(epoch)
+            self.train_losses.append(train_loss)
+                
+        def on_validation_epoch_end(self, trainer, pl_module):
+            val_loss = trainer.callback_metrics.get('val_mean_loss')
+            if isinstance(val_loss, torch.Tensor):
+                val_loss = val_loss.item()
+            self.val_losses.append(val_loss)
+            
+        def get_losses(self):
+            return {
+                'epochs': self.epochs,
+                'train_losses': self.train_losses,
+                'val_losses': self.val_losses
+            }
+
+    loss_tracker = LossTracker()
     print("thinkdeb type of precision ",type(args.precision),"value is ",args.precision)
     print("thinkdeb checkpoint_callback",checkpoint_callback)
     print(f"Checkpoint Callback Configuration:")
@@ -312,7 +345,7 @@ def main(input_args=None):
         num_nodes=num_nodes,
         logger=logger,
         log_every_n_steps=1,
-        callbacks=[checkpoint_callback],
+        callbacks=[checkpoint_callback,loss_tracker],  # Add the loss tracker
         check_val_every_n_epoch=args.val_interval,
         precision=args.precision,
     )
@@ -365,6 +398,7 @@ def main(input_args=None):
         trainer.test(model=model, dataloaders=eval_loader, ckpt_path=args.load)
         print("thinkdeb after trainer.test")
     else:
+
         # Train model
         for batch in train_loader:
                 print(f"Batch contains {len(batch)} elements")
@@ -403,7 +437,7 @@ def main(input_args=None):
 #            print(f"Targets shape: {targets.shape}, Targets dtype: {targets.dtype}")
         # Ensure inputs and model are on the same device
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        device = torch.device('cpu') #thinkdeb555
+#clt        device = torch.device('cpu') #thinkdeb555
         print(f'thinkdebUsing device: {device}')
         model.to(device)
         model=model.float() #added by Ting to avoid errors of different types in model.
@@ -416,6 +450,12 @@ def main(input_args=None):
        # After training
         completed_epochs = trainer.current_epoch
         print(f"Training completed after {completed_epochs} epochs.")
+# After training, you can access the losses:
+        losses = loss_tracker.get_losses()
+# Or access directly:
+        print("Epochs:", loss_tracker.epochs)
+        print("Training losses:", loss_tracker.train_losses)
+        print("Validation losses:", loss_tracker.val_losses)
 
 
 

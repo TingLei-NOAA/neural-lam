@@ -433,8 +433,8 @@ class ARModel(pl.LightningModule):
 
                 if wandb_run == "disabled":
                     example_i = self.plotted_examples
-                    for var_name, fig in zip(self.config_loader.dataset.var_names, var_figs):
-                        filename = f"{var_name}_example_{example_i}.png"  # Define the file format and name
+                    for idx, (var_name, fig) in enumerate(zip(self.config_loader.dataset.var_names, var_figs)):
+                        filename = f"{var_name}_example_{example_i}_fig{idx}_pred_{t_i}.png"  # Define the file format and name
                         fig_path = os.path.join(run_dir, filename)  # Combine directory and filename
                         fig.savefig(fig_path)  # Save the figure
                         plt.close(fig)  # Close the figure to free up memory
