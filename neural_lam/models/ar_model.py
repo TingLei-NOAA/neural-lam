@@ -234,13 +234,13 @@ class ARModel(pl.LightningModule):
         """
         print ("thinkdeb in all_gather_cat tenshor.shape is ",tensor_to_gather.shape)
 #clt        if  self.global_rank ==0 :
-        if self.trainer.num_devices ==1  :
-           print("thinkdeb self.trainer.num_devices ==1")
+        if self.trainer.world_size > 1  :
+           print(f"trainer.world_size/parallel run is  {self.trainer.world_size}")
            
-           return self.all_gather(tensor_to_gather)
-        else: 
            return self.all_gather(tensor_to_gather).flatten(0, 1)
-          
+        else: 
+           print(f"trainer.world_size/serial run is  {self.trainer.world_size}")
+           return self.all_gather(tensor_to_gather)
 
     # newer lightning versions requires batch_idx argument, even if unused
     # pylint: disable-next=unused-argument

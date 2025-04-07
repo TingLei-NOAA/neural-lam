@@ -214,7 +214,7 @@ class WeatherDataset(torch.utils.data.Dataset):
     #cltorg            f"nwp_toa_downwelling_shortwave_flux_{sample_datetime}.npy",
                 f"nwp_{new_sample_datetime}_solar_flux_15km.npy",
             )
-        
+#        print(f"thinkdeb flux file is {flux_path}") 
         flux = torch.tensor(np.load(flux_path), dtype=torch.float32).unsqueeze(
             -1
         )  # (N_t', dim_y, dim_x, 1)
@@ -273,6 +273,13 @@ class WeatherDataset(torch.utils.data.Dataset):
         )  # (sample_len, N_grid, 4)
 
         # Put forcing features together
+           # Debug prints
+        print(f"flux shape: {flux.shape}",flush=True)
+        print(f"datetime_forcing shape: {datetime_forcing.shape}",flush=True)
+#        print(f"forcing_features shape: {forcing_features.shape}")
+#        print(f"forcing_features[:-2] shape: {forcing_features[:-2].shape}")
+#        print(f"forcing_features[1:-1] shape: {forcing_features[1:-1].shape}")
+#        print(f"forcing_features[2:] shape: {forcing_features[2:].shape}")
         forcing_features = torch.cat(
             (flux, datetime_forcing), dim=-1
         )  # (sample_len, N_grid, d_forcing)
