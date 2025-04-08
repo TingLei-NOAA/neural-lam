@@ -1,28 +1,49 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import re
 
-def parse_losses(filename):
-    with open(filename, 'r') as f:
-        content = f.read()
-    
-    # Extract training and validation losses using regex
-    train_match = re.search(r'Training losses: \[(.*?)\]', content)
-    val_match = re.search(r'Validation losses: \[(.*?)\]', content)
-    
-    if train_match and val_match:
-        # Clean and parse training losses
-        train_losses = train_match.group(1)
-        train_losses = re.sub(r'0:\s*', '', train_losses)  # Remove SLURM prefixes
-        train_losses = [float(x.strip()) for x in train_losses.split(',') if x.strip()]
-        
-        # Clean and parse validation losses
-        val_losses = val_match.group(1)
-        val_losses = re.sub(r'0:\s*', '', val_losses)  # Remove SLURM prefixes
-        val_losses = [float(x.strip()) for x in val_losses.split(',') if x.strip()]
-        
-        return train_losses, val_losses
-    return None, None
+# Pre-parsed training and validation losses
+train_losses = [2.2661, 2.1252, 2.1293, 1.9684, 1.9282, 1.9661, 1.9507, 1.9466, 2.0004, 1.8416,
+                1.8298, 1.8216, 1.8937, 1.8492, 1.7958, 1.7316, 1.7311, 1.7502, 1.7123, 1.7326,
+                1.7127, 1.7123, 1.6264, 1.7423, 1.6221, 1.6086, 1.7712, 1.7446, 1.4966, 1.7483,
+                1.6667, 1.6523, 1.5911, 1.7026, 1.5616, 1.6525, 1.6320, 1.8229, 1.6256, 1.6479,
+                1.6242, 1.6637, 1.6318, 1.6903, 1.4627, 1.6383, 1.5860, 1.4420, 1.6427, 1.5307,
+                1.5245, 1.5226, 1.6940, 1.6249, 1.5841, 1.5370, 1.4883, 1.4721, 1.6130, 1.5582,
+                1.5546, 1.5782, 1.5230, 1.4126, 1.5336, 1.5284, 1.5408, 1.5539, 1.4965, 1.4545,
+                1.5663, 1.4465, 1.5002, 1.4899, 1.4889, 1.3947, 1.5075, 1.5601, 1.4243, 1.5625,
+                1.4089, 1.5700, 1.4215, 1.5123, 1.5203, 1.5276, 1.4194, 1.4505, 1.5312, 1.4286,
+                1.3721, 1.3693, 1.4980, 1.5987, 1.4816, 1.5146, 1.3795, 1.5043, 1.5035, 1.4363,
+                1.4739, 1.4012, 1.4545, 1.4508, 1.4346, 1.4934, 1.4432, 1.4960, 1.5238, 1.3501,
+                1.5329, 1.3867, 1.5074, 1.4071, 1.3659, 1.4457, 1.4323, 1.4214, 1.4700, 1.3779,
+                1.4201, 1.3902, 1.3982, 1.4873, 1.3281, 1.4271, 1.4198, 1.4642, 1.4582, 1.5044,
+                1.5050, 1.3474, 1.3965, 1.4762, 1.4100, 1.3596, 1.3280, 1.3999, 1.3849, 1.3749,
+                1.4265, 1.3638, 1.3545, 1.3709, 1.4177, 1.4173, 1.3772, 1.3937, 1.4148, 1.3765,
+                1.2545, 1.3458, 1.3257, 1.4007, 1.3918, 1.3587, 1.4141, 1.3557, 1.2807, 1.4034,
+                1.4828, 1.3056, 1.4210, 1.4203, 1.4263, 1.4185, 1.5000, 1.3767, 1.3917, 1.3944,
+                1.2341, 1.3519, 1.4660, 1.3652, 1.3833, 1.4391, 1.3875, 1.2409, 1.2866, 1.3979,
+                1.3215, 1.3898, 1.2672, 1.3083, 1.3060, 1.3831, 1.3243, 1.3256, 1.3876, 1.3562,
+                1.3781, 1.2506, 1.3282, 1.3755, 1.3151, 1.2740, 1.3216, 1.4430, 1.2764, 1.2509,
+                1.3114, 1.2082, 1.2125, 1.1871, 1.2696, 1.2049, 1.2170, 1.2031, 1.2334, 1.2264,
+                1.1265, 1.3236, 1.2638, 1.1555, 1.1777, 1.3115, 1.1748, 1.2457, 1.1925, 1.1021,
+                1.1912, 1.2424, 1.2295, 1.2430, 1.1585, 1.2674, 1.1567, 1.2252, 1.2203, 1.2871,
+                1.0984, 1.2178, 1.1442, 1.1645, 1.1990, 1.2722, 1.1687, 1.2302, 1.1876, 1.3155,
+                1.2368, 1.2243, 1.2829, 1.2113]
+
+val_losses = [9.5388, 7.6368, 7.4645, 7.2453, 7.2293, 7.0196, 6.7507, 6.7225, 6.7844, 6.5620,
+              6.3488, 6.3138, 6.1241, 6.4599, 6.1810, 6.1256, 6.7455, 6.4371, 5.8757, 6.1206,
+              5.9937, 5.7699, 5.5073, 5.6273, 5.7106, 5.4211, 5.6758, 6.2898, 5.5205, 5.9375,
+              5.1789, 5.7631, 5.4707, 5.8547, 5.5190, 5.7686, 5.1145, 5.5851, 5.3773, 5.0811,
+              5.0413, 5.1192, 5.1484, 5.3619, 5.3218, 4.7777, 5.0358, 5.0549, 4.7344, 5.2369,
+              4.8464, 4.6655, 5.0747, 5.0264, 4.9751, 4.9167, 4.8540, 5.4645, 4.6726, 4.6017,
+              4.7175, 4.4648, 5.2180, 4.8311, 4.8771, 4.9017, 5.4060, 4.6752, 5.0090, 5.0723,
+              4.4369, 5.2001, 4.5264, 4.3665, 4.3933, 4.9602, 4.8541, 5.8083, 4.6038, 5.3061,
+              4.3751, 4.5296, 5.0303, 4.1962, 4.2631, 4.3806, 4.7073, 6.0053, 4.6948, 4.3758,
+              4.7518, 4.6979, 4.3381, 4.9078, 4.3720, 4.1508, 4.1456, 4.0550, 4.7429, 5.2786,
+              3.9934, 5.1212, 4.2157, 5.7784, 4.5821, 4.0241, 4.1282, 4.3631, 5.6998, 3.9792,
+              4.0703, 5.0462, 3.9362, 4.1932, 4.2574, 3.7654, 4.1661, 3.7908, 3.9697, 4.1266,
+              4.8471, 4.8647, 4.4192, 3.7949, 3.7517, 3.8530, 4.0049, 3.9467, 4.2257, 5.1471,
+              3.9277, 3.7000, 3.7805, 4.4776, 3.9562, 4.2109, 3.7552, 4.4272, 4.6761, 4.7883,
+              4.4999, 3.5326, 3.8757, 4.1604, 3.6432, 3.7791, 3.8043, 4.8000, 4.5702, 4.0728,
+              3.8276, 3.6069, 3.5937, 3.5365, 3.9834, 3.8586, 3.6662, 3.9978, 3.9609, 4.1055]
 
 def plot_losses(train_losses, val_losses, output_file='training_curves.png'):
     plt.figure(figsize=(12, 6))
@@ -58,23 +79,19 @@ def plot_losses(train_losses, val_losses, output_file='training_curves.png'):
     plt.tight_layout()
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     print(f"Plot saved to {output_file}")
+    
+    # Print some statistics
+    print("\nTraining Loss Statistics:")
+    print(f"Initial: {train_losses[0]:.4f}")
+    print(f"Final: {train_losses[-1]:.4f}")
+    print(f"Best: {min(train_losses):.4f}")
+    print(f"Mean: {np.mean(train_losses):.4f}")
+    
+    print("\nValidation Loss Statistics:")
+    print(f"Initial: {val_losses[0]:.4f}")
+    print(f"Final: {val_losses[-1]:.4f}")
+    print(f"Best: {min(val_losses):.4f}")
+    print(f"Mean: {np.mean(val_losses):.4f}")
 
 if __name__ == "__main__":
-    train_losses, val_losses = parse_losses("d0")  # Change this to your SLURM output file
-    if train_losses and val_losses:
-        plot_losses(train_losses, val_losses)
-        
-        # Print some statistics
-        print("\nTraining Loss Statistics:")
-        print(f"Initial: {train_losses[0]:.4f}")
-        print(f"Final: {train_losses[-1]:.4f}")
-        print(f"Best: {min(train_losses):.4f}")
-        print(f"Mean: {np.mean(train_losses):.4f}")
-        
-        print("\nValidation Loss Statistics:")
-        print(f"Initial: {val_losses[0]:.4f}")
-        print(f"Final: {val_losses[-1]:.4f}")
-        print(f"Best: {min(val_losses):.4f}")
-        print(f"Mean: {np.mean(val_losses):.4f}")
-    else:
-        print("Could not parse losses from the file")
+    plot_losses(train_losses, val_losses)
