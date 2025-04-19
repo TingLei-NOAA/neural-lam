@@ -1,0 +1,44 @@
+ Idx  Var Name    Var Longname                                             Loaded Weight    Expected Weight
+-----  ----------  -----------------------------------------------------  ---------------  -----------------
+    0  pres_0g     pres_heightAboveGround_0_instant                               0.10000            0.10000
+    1  hgt_500     gpm_pressureAbove500hpa_0_instant                              0.10000            0.10000
+    2  ugrd_925    u_isobaricInhPa_925_instant                                    0.10000            0.10000
+    3  ugrd_850    u_isobaricInhPa_850_instant                                    0.05000            0.05000
+    4  ugrd_500    u_isobaricInhPa_500_instant                                    0.03000            0.03000
+    5  ugrd_200    u_isobaricInhPa_200_instant                                    0.01000            0.01000
+    6  vgrd_925    v_isobaricInhPa_925_instant                                    0.10000            0.10000
+    7  vgrd_850    v_isobaricInhPa_850_instant                                    0.05000            0.05000
+    8  vgrd_500    v_isobaricInhPa_500_instant                                    0.03000            0.03000
+    9  vgrd_200    v_isobaricInhPa_200_instant                                    0.01000            0.01000
+   10  temp_925    temp_isobaricInhPa_925_instant                                 0.10000            0.10000
+   11  temp_850    temp_isobaricInhPa_850_instant                                 0.05000            0.05000
+   12  temp_500    temp_isobaricInhPa_500_instant                                 0.03000            0.03000
+   13  temp_200    temp_isobaricInhPa_200_instant                                 0.01000            0.01000
+   14  sphum_925   sphum_isobaricInhPa_925_instant                                0.10000            0.10000
+   15  sphum_850   sphum_isobaricInhPa_850_instant                                0.05000            0.05000
+   16  sphum_500   sphum_isobaricInhPa_500_instant                                0.03000            0.03000
+   17  sphum_200   sphum_isobaricInhPa_200_instant                                0.01000            0.01000
+   18  clmr_925    clmr_isobaricInhPa_925_instant                                 0.10000            0.10000
+   19  clmr_850    clmr_isobaricInhPa_850_instant                                 0.05000            0.05000
+   20  clmr_500    clmr_isobaricInhPa_500_instant                                 0.03000            0.03000
+   21  clmr_200    clmr_isobaricInhPa_200_instant                                 0.01000            0.01000
+   22  icmr_925    icmr_isobaricInhPa_925_instant                                 0.10000            0.10000
+   23  icmr_850    icmr_isobaricInhPa_850_instant                                 0.05000            0.05000
+   24  icmr_500    icmr_isobaricInhPa_500_instant                                 0.03000            0.03000
+   25  icmr_200    icmr_isobaricInhPa_200_instant                                 0.01000            0.01000
+   26  rwmr_925    rwmr_isobaricInhPa_925_instant                                 0.10000            0.10000
+   27  rwmr_850    rwmr_isobaricInhPa_850_instant                                 0.05000            0.05000
+   28  rmwr_500    rwmr_isobaricInhPa_500_instant                                 0.03000            0.03000
+   29  rwmr_200    rwmr_isobaricInhPa_200_instant                                 0.01000            0.01000
+   30  snmr_925    snmr_isobaricInhPa_925_instant                                 0.10000            0.10000
+   31  snmr_850    snmr_isobaricInhPa_850_instant                                 0.05000            0.05000
+   32  snmr_500    snmr_isobaricInhPa_500_instant                                 0.03000            0.03000
+   33  snmr_200    snmr_isobaricInhPa_200_instant                                 0.01000            0.01000
+   34  grle_925    grle_isobaricInhPa_925_instant                                 0.10000            0.10000
+   35  grle_850    grle_isobaricInhPa_850_instant                                 0.05000            0.05000
+   36  grle_500    grle_isobaricInhPa_500_instant                                 0.03000            0.03000
+   37  grle_200    grle_isobaricInhPa_200_instant                                 0.01000            0.01000
+   38  temp_sfc    temperature_surface_0_instant                                  0.10000            0.10000
+   39  tcdc        tcdc_TotalCloudCover_entireAtmosphere_0_instant                0.10000            0.10000
+   40  refc        refc_CompositeReflectivity_entireAtmosphere_0_instant          0.10000            0.10000
+
