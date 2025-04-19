@@ -14,6 +14,9 @@ from lightning_fabric.utilities import seed
 from . import WeatherDataset, config, utils
 from .models import GraphLAM, HiLAM, HiLAMParallel
 
+from pytorch_lightning.utilities.rank_zero import rank_zero_only
+import numpy as np
+
 torch.set_default_dtype(torch.float32) #added by clt
 MODELS = {
     "graph_lam": GraphLAM,
@@ -157,6 +160,18 @@ def main(input_args=None):
     )
     parser.add_argument(
         "--lr", type=float, default=1e-3, help="learning rate (default: 0.001)"
+    )
+    parser.add_argument(
+        "--beta1", type=float, default=0.9, help="adam option  beta: first one (default: 0.9)"
+    )
+    parser.add_argument(
+        "--beta2", type=float, default=0.95, help="adam option  beta: second one (default: 0.9)5"
+    )
+    parser.add_argument(
+        "--weight_decay", type=float, default=0.0, help="weight for L2 regularization of weights (default: 0.0)"
+    )
+    parser.add_argument(
+        "--accumulate_grad_batches", type=float, default=1, help="accumulated number of baches for use of gradientsa (default: 1)"
     )
     parser.add_argument(
         "--val_interval",
@@ -344,6 +359,7 @@ def main(input_args=None):
         devices=ntasks_per_node,
         num_nodes=num_nodes,
         logger=logger,
+        accumulate_grad_batches=args.accumulate_grad_batches,
         log_every_n_steps=1,
         callbacks=[checkpoint_callback,loss_tracker],  # Add the loss tracker
         check_val_every_n_epoch=args.val_interval,
@@ -453,9 +469,20 @@ def main(input_args=None):
 # After training, you can access the losses:
         losses = loss_tracker.get_losses()
 # Or access directly:
-        print("Epochs:", loss_tracker.epochs)
-        print("Training losses:", loss_tracker.train_losses)
-        print("Validation losses:", loss_tracker.val_losses)
+        
+        @rank_zero_only
+        def print_losses():
+            print(f"Training completed after {completed_epochs} epochs.")
+            # After training, you can access the losses:
+            losses = loss_tracker.get_losses()
+            # Or access directly:
+            print("Epochs:", loss_tracker.epochs)
+#            print("Training losses:", loss_tracker.train_losses)
+            np.savetxt("training_losses.txt", loss_tracker.train_losses)
+#            print("Validation losses:", loss_tracker.val_losses)
+            np.savetxt("validation_losses.txt", loss_tracker.val_losses)
+        
+        print_losses()
 
 
 
