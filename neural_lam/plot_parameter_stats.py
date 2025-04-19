@@ -157,7 +157,8 @@ def main():
     
     # Load config to get variable names
     config_loader = config.Config.from_file(args.data_config)
-    var_names = config_loader.data_vars
+   #cltorg  var_names = config_loader.data_vars
+    var_names = config_loader.dataset.var_names
     
     # Load statistics
     mean_path = os.path.join(args.static_dir, f"{args.prefix}mean.pt")
