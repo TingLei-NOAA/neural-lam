@@ -166,6 +166,7 @@ def main():
     flux_path = os.path.join(args.static_dir, "flux_stats.pt")
     
     mean = torch.load(mean_path)
+    print(f"mean is {mean}")
     std = torch.load(std_path)
     
     # Create plots for feature statistics
