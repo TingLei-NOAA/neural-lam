@@ -204,7 +204,7 @@ class ARModel(pl.LightningModule):
 
         return prediction, target_states, pred_std
 
-    def training_step(self, batch):
+    def training_step(self, batch, batch_idx):
         """
         Train on single batch
         """
@@ -217,9 +217,15 @@ class ARModel(pl.LightningModule):
             )
         )  # mean over unrolled times and batch
 
-        log_dict = {"train_loss": batch_loss}
-        self.log_dict(
-            log_dict, prog_bar=True, on_step=True, on_epoch=True, sync_dist=True
+        # Log with proper synchronization for both serial and distributed training
+        self.log(
+            'train_loss',
+            batch_loss,
+            on_step=True,
+            on_epoch=True,
+            prog_bar=True,
+            sync_dist=True,
+            batch_size=target.size(0)  # Add batch size for proper averaging
         )
         return batch_loss
 
@@ -258,14 +264,19 @@ class ARModel(pl.LightningModule):
         )  # (time_steps-1)
         mean_loss = torch.mean(time_step_loss)
 
-        # Log loss per time step forward and mean
+        # Log with proper synchronization for both serial and distributed training
         val_log_dict = {
             f"val_loss_unroll{step}": time_step_loss[step - 1]
             for step in self.args.val_steps_to_log
         }
         val_log_dict["val_mean_loss"] = mean_loss
+        
         self.log_dict(
-            val_log_dict, on_step=False, on_epoch=True, sync_dist=True
+            val_log_dict,
+            on_step=False,
+            on_epoch=True,
+            sync_dist=True,
+            batch_size=target.size(0)  # Add batch size for proper averaging
         )
 
         # Store MSEs
