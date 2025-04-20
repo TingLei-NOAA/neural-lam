@@ -230,27 +230,6 @@ class ARModel(pl.LightningModule):
         )
         return batch_loss
 
-    def all_gather_cat(self, tensor_to_gather):
-        """
-        Gather tensors across all ranks, and concatenate across dim. 0
-        (instead of stacking in new dim. 0)
-
-        tensor_to_gather: (d1, d2, ...), distributed over K ranks
-
-        returns: (K*d1, d2, ...)
-        """
-        print ("thinkdeb in all_gather_cat tenshor.shape is ",tensor_to_gather.shape)
-#clt        if  self.global_rank ==0 :
-        if self.trainer.world_size > 1  :
-           print(f"trainer.world_size/parallel run is  {self.trainer.world_size}")
-           
-           return self.all_gather(tensor_to_gather).flatten(0, 1)
-        else: 
-           print(f"trainer.world_size/serial run is  {self.trainer.world_size}")
-           return self.all_gather(tensor_to_gather)
-
-    # newer lightning versions requires batch_idx argument, even if unused
-    # pylint: disable-next=unused-argument
     def validation_step(self, batch, batch_idx):
         """
         Run validation on single batch
@@ -290,17 +269,26 @@ class ARModel(pl.LightningModule):
         )  # (B, pred_steps, d_f)
         self.val_metrics["mse"].append(entry_mses)
 
-    def on_validation_epoch_end(self):
+    def all_gather_cat(self, tensor_to_gather):
         """
-        Compute val metrics at the end of val epoch
+        Gather tensors across all ranks, and concatenate across dim. 0
+        (instead of stacking in new dim. 0)
+
+        tensor_to_gather: (d1, d2, ...), distributed over K ranks
+
+        returns: (K*d1, d2, ...)
         """
-        # Create error maps for all test metrics
-        self.aggregate_and_plot_metrics(self.val_metrics, prefix="val")
+        print ("thinkdeb in all_gather_cat tenshor.shape is ",tensor_to_gather.shape)
+#clt        if  self.global_rank ==0 :
+        if self.trainer.world_size > 1  :
+           print(f"trainer.world_size/parallel run is  {self.trainer.world_size}")
+           
+           return self.all_gather(tensor_to_gather).flatten(0, 1)
+        else: 
+           print(f"trainer.world_size/serial run is  {self.trainer.world_size}")
+           return self.all_gather(tensor_to_gather)
 
-        # Clear lists with validation metrics values
-        for metric_list in self.val_metrics.values():
-            metric_list.clear()
-
+    # newer lightning versions requires batch_idx argument, even if unused
     # pylint: disable-next=unused-argument
     def test_step(self, batch, batch_idx):
         """
@@ -568,6 +556,18 @@ class ARModel(pl.LightningModule):
             wandb.log(log_dict)  # Log all
             plt.close("all")  # Close all figs
 
+    def on_validation_epoch_end(self):
+        """
+        Compute val metrics at the end of val epoch
+        """
+        # Create error maps for all test metrics
+        self.aggregate_and_plot_metrics(self.val_metrics, prefix="val")
+
+        # Clear lists with validation metrics values
+        for metric_list in self.val_metrics.values():
+            metric_list.clear()
+
+    # pylint: disable-next=unused-argument
     def on_test_epoch_end(self):
         """
         Compute test metrics and make plots at the end of test epoch.
