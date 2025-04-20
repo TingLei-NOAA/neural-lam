@@ -4,12 +4,14 @@ import random
 import time
 from argparse import ArgumentParser
 import os
+import numpy as np
 
 # Third-party
 import pytorch_lightning as pl
 import torch
 from lightning_fabric.utilities import seed
 from torch.utils.data.distributed import DistributedSampler
+from pytorch_lightning.utilities.rank_zero import rank_zero_only
 
 # Local
 from . import WeatherDataset, config, utils
@@ -167,6 +169,18 @@ def main(input_args=None):
         help="Number of epochs training between each validation run "
         "(default: 1)",
     )
+    parser.add_argument(
+        "--beta1", type=float, default=0.9, help="adam option beta: first one (default: 0.9)"
+    )
+    parser.add_argument(
+        "--beta2", type=float, default=0.95, help="adam option beta: second one (default: 0.95)"
+    )
+    parser.add_argument(
+        "--weight_decay", type=float, default=0.0, help="weight for L2 regularization of weights (default: 0.0)"
+    )
+    parser.add_argument(
+        "--accumulate_grad_batches", type=float, default=1, help="accumulated number of batches for use of gradients (default: 1)"
+    )
 
     # Evaluation options
     parser.add_argument(
@@ -231,7 +245,14 @@ def main(input_args=None):
     # Set seed
     seed.seed_everything(args.seed)
 
-    # Create datasets
+    # Get SLURM info for DDP
+    world_size = int(os.environ.get("SLURM_NTASKS", 1))
+    world_rank = int(os.environ.get("SLURM_PROCID", 0))
+    local_rank = int(os.environ.get("LOCAL_RANK", 0))
+    ntasks_per_node = int(os.environ.get("SLURM_NTASKS_PER_NODE", 1))
+    num_nodes = int(os.environ.get("SLURM_NNODES", 1))
+
+    # Load data with DDP samplers
     train_dataset = WeatherDataset(
         config_loader.dataset.name,
         pred_length=args.ar_steps,
@@ -239,6 +260,21 @@ def main(input_args=None):
         subsample_step=args.step_length,
         subset=bool(args.subset_ds),
         control_only=args.control_only,
+    )
+    
+    train_sampler = DistributedSampler(
+        train_dataset,
+        num_replicas=world_size,
+        rank=world_rank,
+        shuffle=True
+    )
+
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset,
+        batch_size=args.batch_size,
+        sampler=train_sampler,
+        num_workers=args.n_workers,
+        pin_memory=True
     )
 
     max_pred_length = (19 // args.step_length) - 2
@@ -251,37 +287,29 @@ def main(input_args=None):
         control_only=args.control_only,
     )
 
-    # Set up device and precision
-    if torch.cuda.is_available():
-        device_name = "cuda"
-        torch.set_float32_matmul_precision("high")  # Allows using Tensor Cores on A100s
-    else:
-        device_name = "cpu"
-
-    # Create samplers for distributed training
-    train_sampler = DistributedSampler(train_dataset) if device_name == "cuda" else None
-    val_sampler = DistributedSampler(val_dataset, shuffle=False) if device_name == "cuda" else None
-
-    # Create data loaders with distributed samplers
-    train_loader = torch.utils.data.DataLoader(
-        train_dataset,
-        batch_size=args.batch_size,
-        shuffle=(train_sampler is None),
-        sampler=train_sampler,
-        num_workers=args.n_workers,
-        pin_memory=True,
+    val_sampler = DistributedSampler(
+        val_dataset,
+        num_replicas=world_size,
+        rank=world_rank,
+        shuffle=False
     )
 
     val_loader = torch.utils.data.DataLoader(
         val_dataset,
         batch_size=args.batch_size,
-        shuffle=False,
         sampler=val_sampler,
         num_workers=args.n_workers,
-        pin_memory=True,
+        pin_memory=True
     )
 
-    # Load model parameters
+    # Set up device
+    if torch.cuda.is_available():
+        device_name = "cuda"
+        torch.set_float32_matmul_precision("high")
+    else:
+        device_name = "cpu"
+
+    # Create model parameters
     model_class = MODELS[args.model]
     model = model_class(args)
 
@@ -311,48 +339,118 @@ def main(input_args=None):
         config=args,
     )
 
-    # Custom callback for tracking loss
     class LossTracker(pl.callbacks.Callback):
         def __init__(self):
             super().__init__()
             self.train_losses = []
             self.val_losses = []
             self.epochs = []
+            
+        def on_train_epoch_end(self, trainer, pl_module):
+            epoch = trainer.current_epoch
+            train_loss = trainer.callback_metrics.get('train_loss')
+            if isinstance(train_loss, torch.Tensor):
+                train_loss = train_loss.item()
+                
+            self.epochs.append(epoch)
+            self.train_losses.append(train_loss)
+                
+        def on_validation_epoch_end(self, trainer, pl_module):
+            val_loss = trainer.callback_metrics.get('val_mean_loss')
+            if isinstance(val_loss, torch.Tensor):
+                val_loss = val_loss.item()
+            self.val_losses.append(val_loss)
+            
+        def get_losses(self):
+            return {
+                'epochs': self.epochs,
+                'train_losses': self.train_losses,
+                'val_losses': self.val_losses
+            }
 
-    # Set up trainer with DDP configuration
+    loss_tracker = LossTracker()
+
+    # Initialize trainer with DDP strategy
     trainer = pl.Trainer(
         max_epochs=args.epochs,
         deterministic=True,
-        strategy="ddp" if device_name == "cuda" else "auto",
+        strategy="ddp",  # Explicitly use DDP
         accelerator=device_name,
-        devices=torch.cuda.device_count() if device_name == "cuda" else None,
-        num_nodes=1,
+        devices=ntasks_per_node,
+        num_nodes=num_nodes,
         logger=logger,
+        accumulate_grad_batches=args.accumulate_grad_batches,
         log_every_n_steps=1,
-        callbacks=[checkpoint_callback, LossTracker()],
+        callbacks=[checkpoint_callback, loss_tracker],
         check_val_every_n_epoch=args.val_interval,
         precision=args.precision,
-        sync_batchnorm=True if device_name == "cuda" else False,
-        gradient_clip_val=1.0,
+        sync_batchnorm=True  # Important for DDP
     )
 
-    # Load checkpoint if specified
-    if args.load is not None:
-        print(f"Loading model from {args.load}")
-        if args.restore_opt:
-            model = model_class.load_from_checkpoint(args.load)
-        else:
-            state_dict = torch.load(args.load)["state_dict"]
-            model.load_state_dict(state_dict)
+    # Initialize wandb metrics on rank 0 only
+    if trainer.global_rank == 0:
+        utils.init_wandb_metrics(logger, args.val_steps_to_log)
 
-    # Train or evaluate
-    if args.eval is None:
-        trainer.fit(model, train_loader, val_loader)
-    else:
+    if args.eval:
         if args.eval == "val":
-            trainer.validate(model, val_loader)
-        else:  # test
-            trainer.test(model, val_loader)
+            eval_loader = val_loader
+        else:  # Test
+            test_dataset = WeatherDataset(
+                config_loader.dataset.name,
+                pred_length=max_pred_length,
+                split="test",
+                subsample_step=args.step_length,
+                subset=bool(args.subset_ds),
+            )
+            
+            test_sampler = DistributedSampler(
+                test_dataset,
+                num_replicas=world_size,
+                rank=world_rank,
+                shuffle=False
+            )
+
+            eval_loader = torch.utils.data.DataLoader(
+                test_dataset,
+                batch_size=args.batch_size,
+                sampler=test_sampler,
+                num_workers=args.n_workers,
+                pin_memory=True
+            )
+
+        print(f"Running evaluation on {args.eval}")
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        print(f'Using device: {device}')
+        model.to(device)
+        model = model.float()
+        trainer.test(model=model, dataloaders=eval_loader, ckpt_path=args.load)
+
+    else:
+        # Train model
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        print(f'Using device: {device}')
+        model.to(device)
+        model = model.float()
+
+        trainer.fit(
+            model=model,
+            train_dataloaders=train_loader,
+            val_dataloaders=val_loader,
+            ckpt_path=args.load,
+        )
+
+    # After training
+    completed_epochs = trainer.current_epoch
+    
+    @rank_zero_only
+    def print_losses():
+        print(f"Training completed after {completed_epochs} epochs.")
+        losses = loss_tracker.get_losses()
+        print("Epochs:", loss_tracker.epochs)
+        np.savetxt("training_losses.txt", loss_tracker.train_losses)
+        np.savetxt("validation_losses.txt", loss_tracker.val_losses)
+    
+    print_losses()
 
 
 if __name__ == "__main__":
