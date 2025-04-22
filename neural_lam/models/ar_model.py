@@ -218,13 +218,23 @@ class ARModel(pl.LightningModule):
             )
         )  # mean over unrolled times and batch
 
-        # Debug logging for gradient accumulation
-        if self.trainer.is_global_zero:  # Only log on rank 0
-            is_accumulating = (batch_idx + 1) % self.trainer.accumulate_grad_batches != 0
-            cur_batch_size = target.size(0)
-            print(f"Batch {batch_idx}: size={cur_batch_size}, accumulating={is_accumulating}")
-            if not is_accumulating:
-                print(f"Performing optimizer step with effective batch size = {cur_batch_size * self.trainer.accumulate_grad_batches}")
+        # Monitor weight decay effect
+        if self.trainer.is_global_zero and batch_idx % 100 == 0:  # Every 100 batches on rank 0
+            total_norm = 0.0
+            for p in self.parameters():
+                if p.requires_grad:
+                    param_norm = p.data.norm(2)
+                    total_norm += param_norm.item() ** 2
+            total_norm = total_norm ** 0.5
+            print(f"Batch {batch_idx}, Total L2 norm of parameters: {total_norm:.4f}")
+            
+            # Calculate weight decay contribution
+            if self.args.weight_decay > 0:
+                decay_loss = 0.0
+                for p in self.parameters():
+                    if p.requires_grad:
+                        decay_loss += (self.args.weight_decay / 2.0) * torch.sum(p ** 2)
+                print(f"Weight decay contribution to loss: {decay_loss.item():.4f}")
 
         # Log with proper synchronization for both serial and distributed training
         self.log(
@@ -234,8 +244,20 @@ class ARModel(pl.LightningModule):
             on_epoch=True,
             prog_bar=True,
             sync_dist=True,
-            batch_size=target.size(0)  # Add batch size for proper averaging
+            batch_size=target.size(0)
         )
+        
+        # Also log parameter norm
+        if batch_idx % 100 == 0:
+            self.log(
+                'param_norm',
+                total_norm,
+                on_step=True,
+                on_epoch=True,
+                prog_bar=True,
+                sync_dist=True
+            )
+            
         return batch_loss
 
     def validation_step(self, batch, batch_idx):
