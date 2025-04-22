@@ -218,14 +218,16 @@ class ARModel(pl.LightningModule):
             )
         )  # mean over unrolled times and batch
 
-        # Monitor weight decay effect
-        if self.trainer.is_global_zero and batch_idx % 100 == 0:  # Every 100 batches on rank 0
-            total_norm = 0.0
-            for p in self.parameters():
-                if p.requires_grad:
-                    param_norm = p.data.norm(2)
-                    total_norm += param_norm.item() ** 2
-            total_norm = total_norm ** 0.5
+        # Calculate parameter norms on all ranks
+        total_norm = 0.0
+        for p in self.parameters():
+            if p.requires_grad:
+                param_norm = p.data.norm(2)
+                total_norm += param_norm.item() ** 2
+        total_norm = total_norm ** 0.5
+
+        # Print debug info only on rank 0
+        if self.trainer.is_global_zero and batch_idx % 100 == 0:
             print(f"Batch {batch_idx}, Total L2 norm of parameters: {total_norm:.4f}")
             
             # Calculate weight decay contribution
@@ -247,7 +249,7 @@ class ARModel(pl.LightningModule):
             batch_size=target.size(0)
         )
         
-        # Also log parameter norm
+        # Log parameter norm every 100 batches
         if batch_idx % 100 == 0:
             self.log(
                 'param_norm',
