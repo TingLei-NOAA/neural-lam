@@ -218,6 +218,14 @@ class ARModel(pl.LightningModule):
             )
         )  # mean over unrolled times and batch
 
+        # Debug logging for gradient accumulation
+        if self.trainer.is_global_zero:  # Only log on rank 0
+            is_accumulating = (batch_idx + 1) % self.trainer.accumulate_grad_batches != 0
+            cur_batch_size = target.size(0)
+            print(f"Batch {batch_idx}: size={cur_batch_size}, accumulating={is_accumulating}")
+            if not is_accumulating:
+                print(f"Performing optimizer step with effective batch size = {cur_batch_size * self.trainer.accumulate_grad_batches}")
+
         # Log with proper synchronization for both serial and distributed training
         self.log(
             'train_loss',
@@ -371,6 +379,7 @@ class ARModel(pl.LightningModule):
         n_examples: number of forecasts to plot
         prediction: (B, pred_steps, num_grid_nodes, d_f), existing prediction.
             Generate if None.
+
         """
         if prediction is None:
             prediction, target = self.common_step(batch)

@@ -179,7 +179,7 @@ def main(input_args=None):
         "--weight_decay", type=float, default=0.0, help="weight for L2 regularization of weights (default: 0.0)"
     )
     parser.add_argument(
-        "--accumulate_grad_batches", type=float, default=1, help="accumulated number of batches for use of gradients (default: 1)"
+        "--accumulate_grad_batches", type=int, default=1, help="accumulated number of batches for use of gradients (default: 1)"
     )
 
     # Evaluation options
