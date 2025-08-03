@@ -226,7 +226,13 @@ class ARModel(pl.LightningModule):
                 total_norm += param_norm.item() ** 2
         total_norm = total_norm ** 0.5
 
-        # Print debug info only on rank 0
+        if self.trainer.is_global_zero:  # Only log on rank 0
+            is_accumulating = (batch_idx + 1) % self.trainer.accumulate_grad_batches != 0
+            cur_batch_size = target.size(0)
+            print(f"Batch {batch_idx}: size={cur_batch_size}, accumulating={is_accumulating}")
+            if not is_accumulating:
+                print(f"Performing optimizer step with effective batch size = {cur_batch_size * self.trainer.accumulate_grad_batches}")
+                # Print debug info only on rank 0}
         if self.trainer.is_global_zero and batch_idx % 100 == 0:
             print(f"Batch {batch_idx}, Total L2 norm of parameters: {total_norm:.4f}")
             
