@@ -388,37 +388,48 @@ def main():
         means_gathered, squares_gathered = [None] * world_size, [
             None
         ] * world_size
-        flux_means_gathered, flux_squares_gathered = [None] * world_size, [
-            None
-        ] * world_size
+        # Gather parameter stats (per-sample tensors)
         dist.all_gather_object(means_gathered, torch.cat(means, dim=0))
         dist.all_gather_object(squares_gathered, torch.cat(squares, dim=0))
-        dist.all_gather_object(flux_means_gathered, flux_means)
-        dist.all_gather_object(flux_squares_gathered, flux_squares)
+
+        # For flux stats, aggregate globally via all-reduce on sums and counts.
+        # These were collected as per-batch means, so we match that semantics
+        # by averaging these per-batch means uniformly across all ranks/batches.
+        if torch.cuda.is_available():
+            red_device = torch.device(f"cuda:{rank}")
+        else:
+            red_device = torch.device("cpu")
+
+        local_flux_means = torch.tensor(flux_means, dtype=torch.float32, device=red_device) if len(flux_means) > 0 else torch.tensor([], dtype=torch.float32, device=red_device)
+        local_flux_squares = torch.tensor(flux_squares, dtype=torch.float32, device=red_device) if len(flux_squares) > 0 else torch.tensor([], dtype=torch.float32, device=red_device)
+
+        local_count = torch.tensor([float(local_flux_means.numel())], dtype=torch.float32, device=red_device)
+        local_sum = torch.tensor([float(local_flux_means.sum().item() if local_flux_means.numel() > 0 else 0.0)], dtype=torch.float32, device=red_device)
+        local_sq_sum = torch.tensor([float(local_flux_squares.sum().item() if local_flux_squares.numel() > 0 else 0.0)], dtype=torch.float32, device=red_device)
+
+        dist.all_reduce(local_count, op=dist.ReduceOp.SUM)
+        dist.all_reduce(local_sum, op=dist.ReduceOp.SUM)
+        dist.all_reduce(local_sq_sum, op=dist.ReduceOp.SUM)
 
         if rank == 0:
-            means_gathered = torch.cat(means_gathered, dim=0)
-            squares_gathered = torch.cat(squares_gathered, dim=0)
-            flux_means_gathered = torch.tensor(flux_means_gathered)
-            flux_squares_gathered = torch.tensor(flux_squares_gathered)
+            means_gathered, squares_gathered = torch.cat(
+                means_gathered, dim=0
+            ), torch.cat(squares_gathered, dim=0)
 
             original_indices = ds.get_original_indices()
-            
-            if max(original_indices) >= means_gathered.size(0):
-                raise ValueError(
-                    f"Index out of bounds: max index {max(original_indices)} >= "
-                    f"tensor size {means_gathered.size(0)}"
-                )
-            
-            print(f"Debug - Tensor sizes:")
-            print(f"means_gathered size: {means_gathered.size()}")
-            print(f"original_indices length: {len(original_indices)}")
-            print(f"original_indices range: [{min(original_indices)}, {max(original_indices)}]")
-            
-            means = [means_gathered[i] for i in original_indices]
-            squares = [squares_gathered[i] for i in original_indices]
-            flux_means = [flux_means_gathered[i] for i in original_indices]
-            flux_squares = [flux_squares_gathered[i] for i in original_indices]
+            means, squares = [means_gathered[i] for i in original_indices], [
+                squares_gathered[i] for i in original_indices
+            ]
+
+            # Compute global flux mean and second moment from reduced sums
+            # Note: if local_count is zero (shouldn't happen), avoid div by zero
+            if local_count.item() > 0:
+                global_flux_mean = (local_sum / local_count).squeeze(0).cpu()
+                global_flux_sq_mean = (local_sq_sum / local_count).squeeze(0).cpu()
+                flux_means = [global_flux_mean]
+                flux_squares = [global_flux_sq_mean]
+            else:
+                flux_means, flux_squares = [], []
     else:
         print("thinkdeb 8") 
         means = [torch.cat(means, dim=0)]  # (N_batch, d_features,)
