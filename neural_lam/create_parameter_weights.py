@@ -520,27 +520,33 @@ def main():
         diff_means_gathered, diff_squares_gathered = [None] * world_size, [
             None
         ] * world_size
-        dist.all_gather_object(
-            diff_means_gathered, torch.cat(diff_means, dim=0)
-        )
-        dist.all_gather_object(
-            diff_squares_gathered, torch.cat(diff_squares, dim=0)
-        )
+
+        diff_means_local = torch.cat(diff_means, dim=0)
+        diff_squares_local = torch.cat(diff_squares, dim=0)
+
+        if isinstance(ds_standard, PaddedWeatherDataset):
+            total_original = ds_standard.total_samples
+            per_rank_base, remainder = divmod(total_original, world_size)
+            local_original = per_rank_base + (1 if rank < remainder else 0)
+            keep_windows = local_original * args.step_length
+            if keep_windows < diff_means_local.shape[0]:
+                diff_means_local = diff_means_local[:keep_windows]
+                diff_squares_local = diff_squares_local[:keep_windows]
+
+        dist.all_gather_object(diff_means_gathered, diff_means_local)
+        dist.all_gather_object(diff_squares_gathered, diff_squares_local)
 
         if rank == 0:
-            diff_means_gathered, diff_squares_gathered = torch.cat(
-                diff_means_gathered, dim=0
-            ).view(-1, *diff_means[0].shape), torch.cat(
-                diff_squares_gathered, dim=0
-            ).view(
-                -1, *diff_squares[0].shape
-            )
-            original_indices = ds_standard.get_original_window_indices(
-                args.step_length
-            )
-            diff_means, diff_squares = [
-                diff_means_gathered[i] for i in original_indices
-            ], [diff_squares_gathered[i] for i in original_indices]
+            diff_means_gathered = torch.cat(diff_means_gathered, dim=0)
+            diff_squares_gathered = torch.cat(diff_squares_gathered, dim=0)
+
+            expected_windows = ds_standard.total_samples * args.step_length
+            if diff_means_gathered.shape[0] > expected_windows:
+                diff_means_gathered = diff_means_gathered[:expected_windows]
+                diff_squares_gathered = diff_squares_gathered[:expected_windows]
+
+            diff_means = [diff_means_gathered]
+            diff_squares = [diff_squares_gathered]
 
     diff_means = [torch.cat(diff_means, dim=0)]  # (N_batch', d_features,)
     diff_squares = [torch.cat(diff_squares, dim=0)]  # (N_batch', d_features,)
@@ -555,3 +561,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
